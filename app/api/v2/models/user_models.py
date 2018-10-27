@@ -76,7 +76,7 @@ class UserModel(DatabaseConnection):
         self.conn = psycopg2.connect(**params)
         cursor = self.conn.cursor()
         cursor.execute(
-            "UPDATE users SET role = 'Admin' WHERE id = %s", user_id
+            "UPDATE users SET role = 'Admin' WHERE id = %s", (user_id,)
         )
         self.conn.commit()
         self.conn.close()

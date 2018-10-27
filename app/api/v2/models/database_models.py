@@ -24,7 +24,7 @@ class DatabaseConnection(object):
                  prod_price int NOT NULL,
                  prod_quantity int NOT NULL,
                  minimum_allowed varchar(255) NOT NULL,
-                 description varchar(255) NOT NULL
+                 prod_description varchar(255) NOT NULL
                  )
 
                   """,
