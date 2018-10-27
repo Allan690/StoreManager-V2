@@ -33,7 +33,8 @@ class DatabaseConnection(object):
             CREATE TABLE IF NOT EXISTS sales(
                 sales_id serial PRIMARY KEY,
                 user_id int REFERENCES users(user_id) NOT NULL,
-                product_id int REFERENCES products(prod_id)
+                product_id int REFERENCES products(prod_id),
+                sales_quantity int NOT NULL
                 )
             """
         )

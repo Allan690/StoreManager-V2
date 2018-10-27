@@ -1,4 +1,3 @@
-import datetime
 import psycopg2
 from .database_models import DatabaseConnection
 from dbConfig import config
@@ -12,7 +11,6 @@ class ProductModel(DatabaseConnection):
         self.data = data
         self.prod_id = None
         self.quantity = None
-        self.date = datetime.datetime.now()
         db = DatabaseConnection()
         db.create_db_tables()
 
