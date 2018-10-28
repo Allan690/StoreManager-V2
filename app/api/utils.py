@@ -1,7 +1,9 @@
 import re
 from flask import jsonify, abort
 from app.api.v2.models.user_models import UserModel
+from app.api.v2.models.product_models import ProductModel
 user_object = UserModel()
+prod_obj = ProductModel()
 
 
 # noinspection PyMethodParameters
@@ -21,6 +23,11 @@ class Validator(object):
                 return jsonify({"Message": "Password can't contain spaces"}), 400
         if len(data['password'].strip()) < 8:
             return jsonify({"Message": "Password should have at least 8 characters"}), 400
+        if len(data['role'].strip()) < 5:
+            return jsonify({"Message": "Role should have at least 5 characters"}), 400
+        for x in data['role']:
+            if x.isspace():
+                return jsonify({"Message": "Role can't contain spaces"}), 400
         if validate_email:
             return jsonify({"Message": "Wrong email format: Enter a valid email address"}), 400
         users = user_object.get_all_users()
@@ -45,6 +52,10 @@ class Validator(object):
             return jsonify({"Message": "Quantity must be a number!"}), 400
         if not isinstance(data['price'], int):
             return jsonify({"Message": "Price must be a number!"}), 400
+        products = prod_obj.get_all_products()
+        for product in products:
+            if data["prod_id"] == product["prod_id"]:
+                return jsonify({'Message': "Product already exists"}), 400
 
     def validate_sales(data):
         if not data or not data['prod_id']:
