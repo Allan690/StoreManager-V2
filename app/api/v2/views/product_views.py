@@ -120,7 +120,7 @@ class ProductViews(object):
         else:
             return jsonify({"Message": "Please log in to fetch your sales"}), 401
 
-    @prod.route('/api/v2/sales/<int:sales_id>', methods=['POST'])
+    @prod.route('/api/v2/sales/<int:sales_id>', methods=['GET'])
     @login_token
     def get_sales_by_id(current_user, sales_id):
         """Fetches a sale from the database using supplied id"""
