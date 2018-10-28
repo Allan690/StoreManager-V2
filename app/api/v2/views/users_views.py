@@ -45,7 +45,7 @@ class UserViews(object):
     def __getitem__(self, item):
         return self.current_user[item]
 
-    @user_dec.route('/api/v1/auth/signup', methods=['POST'])
+    @user_dec.route('/api/v2/auth/signup', methods=['POST'])
     @login_token
     def create_attendant_user(current_user):
         """This view creates an attendant user"""
@@ -62,7 +62,7 @@ class UserViews(object):
             return jsonify({"Message": "Attendant user registered successfully"}), 201
         return jsonify({"Message": "Denied. Only admin can create a user"}), 201
 
-    @user_dec.route('/api/v1/auth/signup-admin', methods=['POST'])
+    @user_dec.route('/api/v2/auth/signup-admin', methods=['POST'])
     @login_token
     def create_admin_user(current_user):
         """This view creates an admin user"""
@@ -79,7 +79,7 @@ class UserViews(object):
             return jsonify({"Message": "Admin user registered successfully"}), 201
         return jsonify({"Message": "Denied. Only admin can create a user"}), 201
 
-    @user_dec.route('/api/v1/auth/signup/<int:user_id>', methods=['POST'])
+    @user_dec.route('/api/v2/auth/signup/<int:user_id>', methods=['PUT'])
     @login_token
     def make_admin(current_user, user_id):
         """This view makes an attendant user an admin"""
@@ -95,7 +95,7 @@ class UserViews(object):
             return jsonify({"Message": "User does not exist!"}), 404
         return jsonify ({"Message": "Denied. Only admin user can make attendant admin"}), 401
 
-    @user_dec.route('/api/v1/auth/users', methods=['POST'])
+    @user_dec.route('/api/v2/auth/users', methods=['POST'])
     @login_token
     def get_all_users(current_user):
         return jsonify({"users": user_obj.get_all_users()}), 200
