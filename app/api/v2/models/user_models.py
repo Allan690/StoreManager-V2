@@ -12,6 +12,7 @@ class UserModel(DatabaseConnection):
         self.email = email
         self.password = password
         self.role = role
+        self.user_id = None
         db = DatabaseConnection()
         db.create_db_tables()
 
@@ -39,12 +40,11 @@ class UserModel(DatabaseConnection):
         params = config()
         self.conn = psycopg2.connect(**params)
         cursor = self.conn.cursor()
-        password = generate_password_hash('as@dsDdz2a', method='sha256')
         cursor.execute(
-            "INSERT INTO users(email, password, role) VALUES('allan@gmail.com', %s, 'Admin')",
-            (password,)
+            "INSERT INTO users(email, password, role) VALUES(%s, %s, 'admin')",
+            (self.email, self.password, )
         )
-        cursor.execute("SELECT role FROM users WHERE email = 'lorna@gmail.com'")
+        cursor.execute("SELECT user_id FROM users WHERE email = %s", (self.email,))
         row_result = cursor.fetchone()
         self.user_id = row_result[0]
         self.conn.commit()
