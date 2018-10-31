@@ -13,6 +13,7 @@ class UserViews(object):
 
     @user_dec.route('/api/v2/auth/signup', methods=['POST'])
     @jwt_required
+
     def create_attendant_user():
         """This view creates an attendant user"""
         email = get_jwt_identity()
@@ -45,7 +46,7 @@ class UserViews(object):
         user.create_admin_user()
         return jsonify({"Message": "Admin user registered successfully"}), 201
 
-    @user_dec.route('/api/v2/auth/make-admin', methods=['PUT'])
+      @user_dec.route('/api/v2/auth/make-admin', methods=['PUT'])
     @jwt_required
     def make_admin_user():
         """This view makes an attendant user an admin"""
@@ -74,7 +75,15 @@ class UserViews(object):
         users = user_obj.get_all_users()
         return jsonify({"Users": users}), 200
 
+
+    @login_token
+    def get_all_users(current_user):
+        return jsonify({"users": user_obj.get_all_users()}), 200
+
+
+
     @user_dec.route('/api/v2/auth/login', methods=['POST'])
+
     def login_user():
         data = request.get_json()
         validate = Validator(data)
