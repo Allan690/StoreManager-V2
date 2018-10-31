@@ -1,4 +1,5 @@
 import psycopg2
+import psycopg2.extras
 from .database_models import DatabaseConnection
 from dbConfig import config
 
@@ -13,38 +14,32 @@ class ProductModel(DatabaseConnection):
         self.quantity = None
         db = DatabaseConnection()
         db.create_db_tables()
+        params = config()
+        self.conn = psycopg2.connect(**params)
+        self.cursor = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     def create_product(self):
         """Creates a product and adds it to the products table"""
-        params = config()
-        self.conn = psycopg2.connect(**params)
-        cursor = self.conn.cursor()
-        cursor.execute("INSERT INTO products(prod_name, prod_category, prod_price, prod_quantity,"
-                       "minimum_allowed,prod_description) "
-                       "VALUES(%s,%s,%s,%s,%s,%s,%s)",
-                       (self.data["prod_name"],
-                        self.data["prod_category"],
-                        self.data["prod_price"],
-                        self.data["prod_quantity"],
-                        self.data["minimum_allowed"],
-                        self.data["prod_description"]
-                        )
-                       )
-        cursor.execute("SELECT prod_id FROM products WHERE prod_name = %s",
-                       (self.data["prod_name"],))
-        row_result = cursor.fetchone()
-        self.prod_id = row_result[0]
+        self.cursor.execute("INSERT INTO products(prod_name, prod_category, prod_price, prod_quantity,"
+                            "minimum_allowed,prod_description) "
+                            "VALUES(%s,%s,%s,%s,%s,%s)",
+                            (self.data["prod_name"],
+                             self.data["prod_category"],
+                             self.data["prod_price"],
+                             self.data["prod_quantity"],
+                             self.data["minimum_allowed"],
+                             self.data["prod_description"],
+                             )
+                            )
         self.conn.commit()
         self.conn.close()
 
     def update_product(self, prod_id):
         """Updates a product in the products table"""
-        db = DatabaseConnection()
         self.prod_id = prod_id
-        db.create_db_tables()
         params = config()
         self.conn = psycopg2.connect(**params)
-        cursor = self.conn.cursor()
+        cursor = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute(
             """UPDATE products SET prod_name = %s, prod_category = %s, 
             prod_price = %s, prod_quantity = %s, minimum_allowed = %s, prod_description = %s
@@ -60,79 +55,99 @@ class ProductModel(DatabaseConnection):
         self.conn.commit()
         self.conn.close()
 
+    def update_prod_name(self, prod_id):
+        """Updates the name of a product """
+        self.cursor.execute("""UPDATE products SET prod_name = %s where prod_id = %s""",
+                            (self.data["prod_name"], prod_id),)
+        self.conn.commit()
+
+    def update_prod_category(self, prod_id):
+        """Updates the category of a product"""
+        self.cursor.execute("""UPDATE products SET prod_category = %s where prod_id = %s""",
+                            (self.data["prod_category"], prod_id),)
+        self.conn.commit()
+
+    def update_prod_quantity(self, quantity, prod_id):
+        """Updates a product's quantity after a sale is made"""
+        self.quantity = quantity
+        self.prod_id = prod_id
+        self.cursor.execute(
+            """UPDATE products SET prod_quantity =%s where prod_id = %s""", (self.quantity, self.prod_id,)
+        )
+        self.conn.commit()
+
+    def update_prod_price(self, prod_id):
+        """Updates price of product"""
+        self.cursor.execute("""UPDATE products SET prod_price = %s where prod_id = %s""",
+                            (self.data["prod_price"], prod_id),)
+        self.conn.commit()
+
+    def update_quantity(self, prod_id):
+        self.cursor.execute("""UPDATE products SET prod_quantity = %s where prod_id = %s""",
+                                (self.data["prod_price"], prod_id), )
+        self.conn.commit()
+
+    def update_min_allowed(self, prod_id):
+        """Updates minimum allowed quantity in inventory"""
+        self.cursor.execute("""UPDATE products SET minimum_allowed = %s where prod_id = %s""",
+                            (self.data["minimum_allowed"], prod_id), )
+        self.conn.commit()
+
+    def update_prod_description(self, prod_id):
+        """Updates the description of the product"""
+        self.cursor.execute("""UPDATE products SET prod_description = %s where prod_id = %s""",
+                            (self.data["prod_description"], prod_id), )
+        self.conn.commit()
+
     def get_all_products(self):
         """Fetches all products from the products table"""
-        db = DatabaseConnection()
-        db.create_db_tables()
-        params = config()
-        self.conn = psycopg2.connect(**params)
-        cursor = self.conn.cursor()
         sql_cmd = "SELECT * FROM products"
-        cursor.execute(sql_cmd)
-        products = cursor.fetchall()
-        all_products = []
-        for product in products:
-            prod_list = list(product)
-            single_product = {"prod_id": prod_list[0],
-                              "prod_name": prod_list[1],
-                              "prod_category": prod_list[2],
-                              "prod_price": prod_list[3],
-                              "prod_quantity": prod_list[4],
-                              "minimum_allowed": prod_list[5],
-                              "prod_description": prod_list[6]
-                              }
-            prod_list.append(single_product)
+        self.cursor.execute(sql_cmd)
+        products = self.cursor.fetchall()
         self.conn.commit()
+        all_products = []
+        for prod in products:
+            prod_dict = {
+                "prod_id": prod[0],
+                "prod_name": prod[1],
+                "prod_category": prod[2],
+                "prod_price": prod[3],
+                "prod_quantity": prod[4],
+                "minimum_allowed": prod[5],
+                "prod_description": prod[6]
+            }
+            all_products.append(prod_dict)
         return all_products
 
     def get_product_by_id(self, prod_id):
         """Fetches a particular product from the table using the product id of that product"""
-        db = DatabaseConnection()
         self.prod_id = prod_id
-        db.create_db_tables()
-        params = config()
-        self.conn = psycopg2.connect(**params)
-        cursor = self.conn.cursor()
-        cursor.execute(
+        self.cursor.execute(
             "Select * from products where prod_id = %s",
             (self.prod_id,)
         )
-        product = cursor.fetchone()
-        prod_list = list(product)
-        single_product = {"prod_id": prod_list[0],
-                          "prod_name": prod_list[1],
-                          "prod_category": prod_list[2],
-                          "prod_price": prod_list[3],
-                          "prod_quantity": prod_list[4],
-                          "minimum_allowed": prod_list[5],
-                          "prod_description": prod_list[6]
-                          }
-        prod_list.append(single_product)
+        product = self.cursor.fetchone()
         self.conn.commit()
-        return prod_list
+        if product:
+            prod = []
+            prod_dict = {
+                "prod_id": product[0],
+                "prod_name": product[1],
+                "prod_category": product[2],
+                "prod_price": product[3],
+                "prod_quantity": product[4],
+                "minimum_allowed": product[5],
+                "prod_description": product[6]
+            }
+            prod.append(prod_dict)
+            return prod
+        return 'Product does not exist'
 
     def delete_product(self, prod_id):
         self.prod_id = prod_id
-        params = config()
-        self.conn = psycopg2.connect(**params)
-        cursor = self.conn.cursor()
-        cursor.execute(
+        self.cursor.execute(
             "DELETE from products where prod_id = %s",
             (self.prod_id,)
-        )
-        self.conn.commit()
-        self.conn.close()
-
-    def update_prod_quantity(self, quantity, prod_id):
-        """Updates a product's quantity after a sale is made"""
-        db = DatabaseConnection()
-        db.create_db_tables()
-        self.quantity = quantity
-        params = config()
-        self.conn = psycopg2.connect(**params)
-        cursor = self.conn.cursor()
-        cursor.execute(
-            """UPDATE products SET quantity = %s Where prod_id = %s""", (self.quantity, prod_id,)
         )
         self.conn.commit()
         self.conn.close()

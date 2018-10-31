@@ -1,5 +1,5 @@
 import re
-from flask import jsonify, abort
+from flask import jsonify
 from app.api.v2.models.user_models import UserModel
 from app.api.v2.models.product_models import ProductModel
 user_object = UserModel()
@@ -23,6 +23,8 @@ class Validator(object):
                 return jsonify({"Message": "Password can't contain spaces"}), 400
         if len(data['password'].strip()) < 8:
             return jsonify({"Message": "Password should have at least 8 characters"}), 400
+        if not data['role']:
+            return jsonify({"Message": "User role is required"}), 400
         if len(data['role'].strip()) < 5:
             return jsonify({"Message": "Role should have at least 5 characters"}), 400
         for x in data['role']:
@@ -36,26 +38,53 @@ class Validator(object):
                 return jsonify({'Message': "User already exists"}), 400
 
     def validate_product(data):
-        if not data or not data['name']:
+        if not data or not data['prod_name']:
             return jsonify({"Message": "Name is required!"}), 400
-        elif not data['quantity'] or data['quantity'] == 0:
+        elif not data['prod_quantity'] or data['prod_quantity'] == 0:
             return jsonify({"Message": "Quantity is required!"}), 400
-        elif not data['description']:
+        elif not data['prod_description']:
             return jsonify({"Message": "Description is required!"}), 400
-        if not isinstance(data['description'], str):
+        if not isinstance(data['prod_description'], str):
             return jsonify({"Message": "Description must be a string!"}), 400
-        if not isinstance(data['name'], str):
+        if not isinstance(data['prod_name'], str):
             return jsonify({"Message": "Product name must be a string!"}), 400
-        elif not data['price'] or data['price'] == 0:
+        elif not data['prod_price'] or data['prod_price'] == 0:
             return jsonify({"Message": "Price is required!"}), 400
-        if not isinstance(data['quantity'], int):
+        if not isinstance(data['prod_quantity'], int):
             return jsonify({"Message": "Quantity must be a number!"}), 400
-        if not isinstance(data['price'], int):
+        if not isinstance(data['prod_price'], int):
             return jsonify({"Message": "Price must be a number!"}), 400
+        if not isinstance(data['minimum_allowed'], int):
+            return jsonify({"Message": "Minimum allowed quantity must be a number!"}), 400
+        if not data['minimum_allowed'] or data['minimum_allowed'] == 0:
+            return jsonify({"Message": "Minimum allowed quantity required!"}), 400
         products = prod_obj.get_all_products()
         for product in products:
-            if data["prod_id"] == product["prod_id"]:
+            if data["prod_name"] == product["prod_name"]:
                 return jsonify({'Message': "Product already exists"}), 400
+
+    def validate_update(data):
+        if data["prod_name"]:
+            if not isinstance(data['prod_name'], str):
+                return jsonify({"Message": "Product name must be a string!"}), 400
+        if data["prod_quantity"]:
+            if not isinstance(data['prod_quantity'], int):
+                return jsonify({"Message": "Quantity must be a number!"}), 400
+        if data["prod_description"]:
+            if not isinstance(data['prod_description'], str):
+                return jsonify({"Message": "Description must be a string!"}), 400
+            if not data['prod_description']:
+                return jsonify({"Message": "Description is required!"}), 400
+        if data["prod_price"]:
+            if not isinstance(data['prod_price'], int):
+                return jsonify({"Message": "Price must be a number!"}), 400
+            elif not data['prod_price'] or data['prod_price'] == 0:
+                return jsonify({"Message": "Price is required!"}), 400
+        if data["minimum_allowed"]:
+            if not isinstance(data['minimum_allowed'], int):
+                return jsonify({"Message": "Minimum allowed quantity must be a number!"}), 400
+            if not data['minimum_allowed'] or data['minimum_allowed'] == 0:
+                return jsonify({"Message": "Minimum allowed quantity required!"}), 400
 
     def validate_sales(data):
         if not data or not data['prod_id']:
