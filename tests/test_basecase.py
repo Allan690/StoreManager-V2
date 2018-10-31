@@ -1,7 +1,7 @@
 import unittest
 import json
 from app import flask_app
-from ..api.v2.models.database_models import DatabaseConnection
+from app.api.v2.models.database_models import DatabaseConnection
 db_obj = DatabaseConnection()
 
 
@@ -9,17 +9,10 @@ class TestSetUp(unittest.TestCase):
     """Initialize the app with test data"""
     def setUp(self):
         self.app = flask_app.test_client()
-        db_obj.create_test_tables()
+        db_obj.create_db_tables()
         self.login_url = '/api/v1/auth/login'
-        self.user = dict(email="testuser@gmail.com", password="testpass1234")
+        self.user = dict(email="testuser@gmail.com", password="testpass1234", role="admin")
         self.unknown = dict(email="username@gmail.com", password="password")
-        self.register = self.app.post('/api/v1/auth/register',
-                                      data=json.dumps(self.user),
-                                      headers={"content-type": "application/json"})
-        self.login = self.app.post(self.login_url, data=json.dumps(self.user), content_type='application/json')
-        self.data = json.loads(self.login.get_data(as_text=True))
-        self.token = self.data['token']
-        self.app.post("/api/v1/auth/register", data=json.dumps(self.unknown),content_type="application/json")
         self.missing_email = dict(email="", password="testpass")
         self.product = dict(name="Shoe Polish", description="Kiwi Shoe Polish", price=1200, quantity=30)
         self.new_product = dict(name="Kiatu mzuri", description="Ni kiatu tu", price=1200,
@@ -50,5 +43,3 @@ class TestSetUp(unittest.TestCase):
         self.password_spaced = dict(email="testuser5@gmail.com", password="  ")
         self.unknown_login = self.app.post("/api/v1/auth/login", data=json.dumps(self.unknown),
                                            content_type="application/json")
-        self.data = json.loads(self.unknown_login.get_data(as_text=True))
-        self.unknown_token = self.data['token']
