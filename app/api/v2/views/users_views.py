@@ -46,6 +46,7 @@ class UserViews(object):
         return self.current_user[item]
 
     @user_dec.route('/api/v2/auth/signup', methods=['POST'])
+
     def create_attendant_user():
         """This view creates an attendant user"""
         data = request.get_json()
@@ -74,6 +75,7 @@ class UserViews(object):
         return jsonify({"Message": "Admin user registered successfully"}), 201
 
     @user_dec.route('/api/v2/auth/signup/<int:user_id>', methods=['PUT'])
+
     @login_token
     def make_admin(current_user, user_id):
         """This view makes an attendant user an admin"""
@@ -89,11 +91,14 @@ class UserViews(object):
         return jsonify({"Message": "Denied. Only admin user can make attendant admin"}), 401
 
     @user_dec.route('/api/v2/auth/users', methods=['GET'])
+
     @login_token
     def get_all_users(current_user):
         return jsonify({"users": user_obj.get_all_users()}), 200
 
+
     @user_dec.route('/api/v2/auth/login', methods=['POST'])
+
     def login_user():
         data = request.get_json()
         validate = Validator(data)
