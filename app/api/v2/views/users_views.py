@@ -1,53 +1,25 @@
-from flask import jsonify, request, Blueprint, session
+from flask import jsonify, request, Blueprint
 from werkzeug.security import generate_password_hash, check_password_hash
-from functools import wraps
-import jwt
-import os
-import datetime
+from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from ..models.user_models import UserModel
 from ...utils import Validator
-os.environ['SECRET'] = 'hello-there-its-allan'
 user_dec = Blueprint('v1_user', __name__)
 user_obj = UserModel()
-
-
-def login_token(f):
-    """All endpoints that need log in will be wrapped by this decorator"""
-
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-        current_user = None
-        if 'x-access-token' in request.headers:
-            token = request.headers['x-access-token']
-        if not token:
-            return jsonify({'Message': 'You need to log in'}), 401
-        try:
-            data = jwt.decode(token, os.getenv('SECRET'), options={'verify_exp': False})
-            users = user_obj.get_all_users()
-            for user in users:
-                if user["email"] == data["email"]:
-                    current_user = user
-        except BaseException:
-            return jsonify({'Message': 'Invalid request!Token is invalid'}), 401
-        return f(current_user, *args, **kwargs)
-
-    return decorated
 
 
 # noinspection PyMethodParameters
 class UserViews(object):
     """This class defines the views of the user"""
 
-    def __init__(self, current_user):
-        self.current_user = current_user
-
-    def __getitem__(self, item):
-        return self.current_user[item]
-
     @user_dec.route('/api/v2/auth/signup', methods=['POST'])
+    @jwt_required
     def create_attendant_user():
         """This view creates an attendant user"""
+        email = get_jwt_identity()
+        user = user_obj.get_role_by_email(email)
+        role = user["role"]
+        if role != "admin":
+            return jsonify({"Message": "You must be an admin to perform this action"}), 403
         data = request.get_json()
         validate = Validator(data)
         if validate.validate_user():
@@ -73,25 +45,34 @@ class UserViews(object):
         user.create_admin_user()
         return jsonify({"Message": "Admin user registered successfully"}), 201
 
-    @user_dec.route('/api/v2/auth/signup/<int:user_id>', methods=['PUT'])
-    @login_token
-    def make_admin(current_user, user_id):
+    @user_dec.route('/api/v2/auth/make-admin', methods=['PUT'])
+    @jwt_required
+    def make_admin_user():
         """This view makes an attendant user an admin"""
-        if current_user["role"] == "Admin":
-            users = user_obj.get_all_users()
-            for user in users:
-                if user["role"] != "admin":
-                    user_obj.make_admin(user_id)
-                    return jsonify({"Message": "User updated to admin role"}), 201
-                else:
-                    return jsonify({"Message": "User is already an admin"}), 403
-            return jsonify({"Message": "User does not exist!"}), 404
-        return jsonify({"Message": "Denied. Only admin user can make attendant admin"}), 401
+        email = get_jwt_identity()
+        user = user_obj.get_role_by_email(email)
+        role = user["role"]
+        if role != "admin":
+            return jsonify({"Message": "You must be an admin to perform this action"}), 403
+        data = request.get_json()
+        user_id = data["user_id"]
+        ret_users = user_obj.get_user_by_id(user_id)
+        print(ret_users)
+        if not ret_users:
+            return jsonify({"Message": "User not found!"}), 404
+        user_obj.make_admin(user_id)
+        return jsonify({"Message": "Attendant made admin successfully!"}), 200
 
     @user_dec.route('/api/v2/auth/users', methods=['GET'])
-    @login_token
-    def get_all_users(current_user):
-        return jsonify({"users": user_obj.get_all_users()}), 200
+    @jwt_required
+    def get_all_users():
+        email = get_jwt_identity()
+        user = user_obj.get_role_by_email(email)
+        role = user["role"]
+        if role != "admin":
+            return jsonify({"Message": "You must be an admin to perform this action"}), 403
+        users = user_obj.get_all_users()
+        return jsonify({"Users": users}), 200
 
     @user_dec.route('/api/v2/auth/login', methods=['POST'])
     def login_user():
@@ -102,10 +83,9 @@ class UserViews(object):
         users = user_obj.get_all_users()
         for user in users:
             if check_password_hash(user['password'], data['password']):
-                session['loggedin'] = True
-                session['email'] = data['email']
-                token = jwt.encode(
-                    dict(email=user['email'], exp=datetime.datetime.utcnow() + datetime.timedelta(minutes=1440)),
-                    os.getenv('SECRET'))
-                return jsonify({"token": token.decode('UTF-8')}), 200
-        return jsonify({"Message": "login invalid!"}), 401
+                access_token = create_access_token(identity=data["email"])
+                return jsonify({"token": access_token}), 200
+        return jsonify({"Message": "User not found!"}), 404
+
+
+
