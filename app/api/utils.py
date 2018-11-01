@@ -54,6 +54,10 @@ class Validator(object):
             return jsonify({"Message": "Quantity must be a number!"}), 400
         if not isinstance(data['prod_price'], int):
             return jsonify({"Message": "Price must be a number!"}), 400
+        if not data['prod_category'] or data['prod_category'] == "":
+            return jsonify({"Message": "Product category required"}), 400
+        if not isinstance(data['prod_category'], str):
+            return jsonify({"Message": "Product category must be a string!"}), 400
         if not isinstance(data['minimum_allowed'], int):
             return jsonify({"Message": "Minimum allowed quantity must be a number!"}), 400
         if not data['minimum_allowed'] or data['minimum_allowed'] == 0:
