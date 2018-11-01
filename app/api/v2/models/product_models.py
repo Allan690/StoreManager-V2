@@ -3,7 +3,6 @@ import psycopg2.extras
 from sys import modules
 from .database_models import DatabaseConnection
 from dbConfig import config, test_config
-from flask import jsonify
 
 
 class ProductModel(DatabaseConnection):

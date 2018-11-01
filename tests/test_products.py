@@ -9,16 +9,21 @@ class TestProductModel(TestSetUp):
     def test_product_creation(self):
         """Tests whether our API can create a product"""
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany", role="admin")),
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
         response = self.app.post('/api/v2/products',
-                                 data=json.dumps(dict(prod_name="Bananas", prod_category="Fruits", prod_price=1200,
-                                                      prod_quantity=100, minimum_allowed=10,
-                                                      prod_description="Sweet bananas")),
+                                 data=json.dumps(
+                                     dict(prod_name="Bananas",
+                                          prod_category="Fruits",
+                                          prod_price=1200,
+                                          prod_quantity=100,
+                                          minimum_allowed=10,
+                                          prod_description="Sweet bananas")),
                                  content_type="application/json",
                                  headers=auth)
         self.assertEqual(response.status_code, 201)
@@ -29,32 +34,40 @@ class TestProductModel(TestSetUp):
         """Raise unauthorized error when invalid token is used"""
         """Login the admin"""
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany", role="admin")),
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth1 = {"Authorization": "Bearer " + token}
         """Sign up an attendant"""
         resp_create_user = self.app.post("/api/v2/auth/signup",
-                                         data=json.dumps(dict(email="ballery112@gmail.com",
-                                                              password="allan121lcompany", role="attendant")),
+                                         data=json.dumps(
+                                             dict(
+                                                 email="ballery112@gmail.com",
+                                                  password="allan121lcompany")),
                                          content_type="application/json",
                                          headers=auth1)
         """Login the attendant"""
         self.assertEqual(resp_create_user.status_code, 201)
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="ballery112@gmail.com",
-                                                        password="allan121lcompany", role="attendant")),
+                                   data=json.dumps(
+                                       dict(email="ballery112@gmail.com",
+                                            password="allan121lcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
         """Try to use attendant's token to create a product"""
         response = self.app.post("/api/v2/products",
-                                 data=json.dumps(dict(prod_name="Mangoes", prod_category="Fruits", prod_price=1200,
-                                                      prod_quantity=100, minimum_allowed=10,
-                                                      prod_description="Sweet bananas")),
+                                 data=json.dumps(
+                                     dict(prod_name="Mangoes",
+                                          prod_category="Fruits",
+                                          prod_price=1200,
+                                          prod_quantity=100,
+                                          minimum_allowed=10,
+                                          prod_description="Sweet bananas")),
                                  content_type="application/json",
                                  headers=auth)
         self.assertEqual(response.status_code, 401)
@@ -65,8 +78,9 @@ class TestProductModel(TestSetUp):
         self.test_product_creation()
         """login a user"""
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany", role="admin")),
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
@@ -82,8 +96,9 @@ class TestProductModel(TestSetUp):
         self.test_product_creation()
         """Login the user"""
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany", role="admin")),
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
@@ -97,17 +112,22 @@ class TestProductModel(TestSetUp):
         """Test that API should not accept missing product name"""
         """Login a user"""
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany", role="admin")),
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
         """Post a product without name"""
         response = self.app.post("/api/v2/products",
-                                 data=json.dumps(dict(prod_name="", prod_category="Fruits", prod_price=1200,
-                                                      prod_quantity=100, minimum_allowed=10,
-                                                      prod_description="Sweet bananas")),
+                                 data=json.dumps(
+                                     dict(prod_name="",
+                                          prod_category="Fruits",
+                                          prod_price=1200,
+                                          prod_quantity=100,
+                                          minimum_allowed=10,
+                                          prod_description="Sweet bananas")),
                                  content_type="application/json",
                                  headers=auth)
         self.assertEqual(response.status_code, 400)
@@ -118,17 +138,22 @@ class TestProductModel(TestSetUp):
         """Test that API should not accept missing product description"""
         """Login a user"""
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany", role="admin")),
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
         """Add a product without description"""
         response = self.app.post("/api/v2/products",
-                                 data=json.dumps(dict(prod_name="Bananas", prod_category="Fruits", prod_price=1200,
-                                                      prod_quantity=100, minimum_allowed=10,
-                                                      prod_description="")),
+                                 data=json.dumps(dict(
+                                     prod_name="Bananas",
+                                     prod_category="Fruits",
+                                     prod_price=1200,
+                                     prod_quantity=100,
+                                     minimum_allowed=10,
+                                     prod_description="")),
                                  content_type="application/json",
                                  headers=auth)
         self.assertEqual(response.status_code, 400)
@@ -139,17 +164,22 @@ class TestProductModel(TestSetUp):
         """Test that API should not accept missing product category"""
         """Login a user"""
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany", role="admin")),
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
         """Add a product without category"""
         response = self.app.post("/api/v2/products",
-                                 data=json.dumps(dict(prod_name="Bananas", prod_category="", prod_price=1200,
-                                                      prod_quantity=100, minimum_allowed=10,
-                                                      prod_description="Sweet bananas")),
+                                 data=json.dumps(
+                                     dict(prod_name="Bananas",
+                                          prod_category="",
+                                          prod_price=1200,
+                                          prod_quantity=100,
+                                          minimum_allowed=10,
+                                          prod_description="Sweet bananas")),
                                  content_type="application/json",
                                  headers=auth)
         self.assertEqual(response.status_code, 400)
@@ -160,17 +190,22 @@ class TestProductModel(TestSetUp):
         """"Tests that the API should not accept product price as a string"""
         """Login the user"""
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany", role="admin")),
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
         """Try posting a product with price as string"""
         response = self.app.post("/api/v2/products",
-                                 data=json.dumps(dict(prod_name="Bananas", prod_category="Fruits", prod_price="1200",
-                                                      prod_quantity=100, minimum_allowed=10,
-                                                      prod_description="Sweet bananas")),
+                                 data=json.dumps(
+                                     dict(prod_name="Bananas",
+                                          prod_category="Fruits",
+                                          prod_price="1200",
+                                          prod_quantity=100,
+                                          minimum_allowed=10,
+                                          prod_description="Sweet bananas")),
                                  content_type="application/json",
                                  headers=auth)
         self.assertEqual(response.status_code, 400)
@@ -181,17 +216,22 @@ class TestProductModel(TestSetUp):
         """Tests that the API should not accept quantities that are strings"""
         """Login the user"""
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany", role="admin")),
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
         """Add a product with quantity as string"""
         response = self.app.post("/api/v2/products",
-                                 data=json.dumps(dict(prod_name="Bananas", prod_category="Fruits", prod_price=1200,
-                                                      prod_quantity="100", minimum_allowed=10,
-                                                      prod_description="Sweet bananas")),
+                                 data=json.dumps(
+                                     dict(prod_name="Bananas",
+                                          prod_category="Fruits",
+                                          prod_price=1200,
+                                          prod_quantity="100",
+                                          minimum_allowed=10,
+                                          prod_description="Sweet bananas")),
                                  content_type="application/json",
                                  headers=auth)
         self.assertEqual(response.status_code, 400)
@@ -203,16 +243,20 @@ class TestProductModel(TestSetUp):
         """Login the user"""
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany", role="admin")),
+                                                        password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
         """Add a product with min allowed quantity as string"""
         response = self.app.post("/api/v2/products",
-                                 data=json.dumps(dict(prod_name="Bananas", prod_category="Fruits", prod_price=1200,
-                                                      prod_quantity=100, minimum_allowed="10",
-                                                      prod_description="Sweet bananas")),
+                                 data=json.dumps(
+                                     dict(prod_name="Bananas",
+                                          prod_category="Fruits",
+                                          prod_price=1200,
+                                          prod_quantity=100,
+                                          minimum_allowed="10",
+                                          prod_description="Sweet bananas")),
                                  content_type="application/json",
                                  headers=auth)
         self.assertEqual(response.status_code, 400)
@@ -226,16 +270,20 @@ class TestProductModel(TestSetUp):
         """Login the admin user and get token"""
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany", role="admin")),
+                                                        password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
         """Update the product"""
         response = self.app.put("/api/v2/products/1",
-                                data=json.dumps(dict(prod_name="Apples", prod_category="Fruits", prod_price=1200,
-                                                     prod_quantity=100, minimum_allowed=10,
-                                                     prod_description="Sweet bananas")),
+                                data=json.dumps(
+                                    dict(prod_name="Apples",
+                                         prod_category="Fruits",
+                                         prod_price=1200,
+                                         prod_quantity=100,
+                                         minimum_allowed=10,
+                                         prod_description="Sweet bananas")),
                                 content_type="application/json",
                                 headers=auth)
         self.assertEqual(response.status_code, 200)
@@ -248,32 +296,39 @@ class TestProductModel(TestSetUp):
         self.test_product_creation()
         """Login the admin"""
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany", role="admin")),
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth1 = {"Authorization": "Bearer " + token}
         """Sign up an attendant"""
         resp_create_user = self.app.post("/api/v2/auth/signup",
-                                         data=json.dumps(dict(email="ballery112@gmail.com",
-                                                              password="allan121lcompany", role="attendant")),
+                                         data=json.dumps(
+                                             dict(email="ballery112@gmail.com",
+                                                  password="allan121lcompany")),
                                          content_type="application/json",
                                          headers=auth1)
         """Login the attendant"""
         self.assertEqual(resp_create_user.status_code, 201)
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="ballery112@gmail.com",
-                                                        password="allan121lcompany", role="attendant")),
+                                   data=json.dumps(
+                                       dict(email="ballery112@gmail.com",
+                                            password="allan121lcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
         """Try to update product using attendant's token"""
         response = self.app.put("/api/v2/products/1",
-                                data=json.dumps(dict(prod_name="Apples", prod_category="Fruits", prod_price=1200,
-                                                     prod_quantity=100, minimum_allowed=10,
-                                                     prod_description="Sweet bananas")),
+                                data=json.dumps(
+                                    dict(prod_name="Apples",
+                                         prod_category="Fruits",
+                                         prod_price=1200,
+                                         prod_quantity=100,
+                                         minimum_allowed=10,
+                                         prod_description="Sweet bananas")),
                                 content_type="application/json",
                                 headers=auth)
         self.assertEqual(response.status_code, 401)
@@ -286,8 +341,9 @@ class TestProductModel(TestSetUp):
         self.test_product_creation()
         """Login the admin user and get token"""
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany", role="admin")),
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
@@ -301,13 +357,15 @@ class TestProductModel(TestSetUp):
         self.assertIn("deleted", response_msg["Message"])
 
     def test_invalid_delete_request(self):
-        """Tests that the API raises an error when user places an invalid delete request"""
+        """Tests that the API raises an error when user
+         places an invalid delete request"""
         """create a product"""
         self.test_product_creation()
         """Login the admin user and get token"""
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany", role="admin")),
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
@@ -327,7 +385,7 @@ class TestProductModel(TestSetUp):
         """Login the admin user and get token"""
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany", role="admin")),
+                                                        password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
@@ -335,14 +393,14 @@ class TestProductModel(TestSetUp):
         """Sign up an attendant"""
         resp_create_user = self.app.post("/api/v2/auth/signup",
                                          data=json.dumps(dict(email="ballery112@gmail.com",
-                                                              password="allan121lcompany", role="attendant")),
+                                                              password="allan121lcompany")),
                                          content_type="application/json",
                                          headers=auth)
         """Login the attendant"""
         self.assertEqual(resp_create_user.status_code, 201)
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(dict(email="ballery112@gmail.com",
-                                                        password="allan121lcompany", role="attendant")),
+                                                        password="allan121lcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
@@ -363,16 +421,20 @@ class TestProductModel(TestSetUp):
         """Login the admin user and get token"""
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany", role="admin")),
+                                                        password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
         """Try to add the same product you already created"""
         response = self.app.post("/api/v2/products",
-                                 data=json.dumps(dict(prod_name="Bananas", prod_category="Fruits", prod_price=1200,
-                                                      prod_quantity=100, minimum_allowed=10,
-                                                      prod_description="Sweet bananas")),
+                                 data=json.dumps(
+                                     dict(prod_name="Bananas",
+                                          prod_category="Fruits",
+                                          prod_price=1200,
+                                          prod_quantity=100,
+                                          minimum_allowed=10,
+                                          prod_description="Sweet bananas")),
                                  content_type="application/json",
                                  headers=auth)
         self.assertEqual(response.status_code, 400)

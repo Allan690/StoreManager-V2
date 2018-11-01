@@ -6,6 +6,35 @@ user_object = UserModel()
 prod_obj = ProductModel()
 
 
+class KeyValidators(object):
+    def __init__(self, data):
+        self.data = data
+
+    def check_missing_keys_in_product(self):
+        if 'prod_name' not in self.data:
+            return jsonify({"Message": "Product Name is required!"}), 400
+        if 'prod_quantity' not in self.data:
+            return jsonify({"Message": "Quantity is required!"}), 400
+        if 'prod_price' not in self.data:
+            return jsonify({"Message": "Product price required!"}), 400
+        if 'prod_category' not in self.data:
+            return jsonify({"Message": "Product category is required"}), 400
+        if 'minimum_allowed' not in self.data:
+            return jsonify({"Message": "Minimum allowed quantity required!"}), 400
+
+    def check_missing_keys_in_login(self):
+        if 'email' not in self.data:
+            return jsonify({"Message": "Email is required!"}), 400
+        if 'password' not in self.data:
+            return jsonify({"Message": "Password is required!"}), 400
+
+    def check_missing_keys_in_sales(self):
+        if 'prod_id' not in self.data:
+            return jsonify({"Message": "Product ID is required!"}), 400
+        if 'quantity' not in self.data:
+            return jsonify({"Message": "Product quantity is required!"}), 400
+
+
 # noinspection PyMethodParameters
 class Validator(object):
     def __init__(self, data):
@@ -23,13 +52,6 @@ class Validator(object):
                 return jsonify({"Message": "Password can't contain spaces"}), 400
         if len(data['password'].strip()) < 8:
             return jsonify({"Message": "Password should have at least 8 characters"}), 400
-        if not data['role']:
-            return jsonify({"Message": "User role is required"}), 400
-        if len(data['role'].strip()) < 5:
-            return jsonify({"Message": "Role should have at least 5 characters"}), 400
-        for x in data['role']:
-            if x.isspace():
-                return jsonify({"Message": "Role can't contain spaces"}), 400
         if validate_email:
             return jsonify({"Message": "Wrong email format: Enter a valid email address"}), 400
         users = user_object.get_all_users()
@@ -48,16 +70,20 @@ class Validator(object):
             return jsonify({"Message": "Description must be a string!"}), 400
         if not isinstance(data['prod_name'], str):
             return jsonify({"Message": "Product name must be a string!"}), 400
+
         elif not data['prod_price'] or data['prod_price'] == 0:
             return jsonify({"Message": "Price is required!"}), 400
+
         if not isinstance(data['prod_quantity'], int):
             return jsonify({"Message": "Quantity must be a number!"}), 400
         if not isinstance(data['prod_price'], int):
             return jsonify({"Message": "Price must be a number!"}), 400
+
         if not data['prod_category'] or data['prod_category'] == "":
             return jsonify({"Message": "Product category required"}), 400
         if not isinstance(data['prod_category'], str):
             return jsonify({"Message": "Product category must be a string!"}), 400
+
         if not isinstance(data['minimum_allowed'], int):
             return jsonify({"Message": "Minimum allowed quantity must be a number!"}), 400
         if not data['minimum_allowed'] or data['minimum_allowed'] == 0:
@@ -103,6 +129,7 @@ class Validator(object):
             return jsonify({"Message": "Product ID cannot be 0!"}), 400
 
     def validate_login(auth):
+
         if not auth:
             return jsonify({"Message": "Email and password required!"}), 401
         if not auth['email']:
@@ -115,7 +142,8 @@ class Validator(object):
             return jsonify({"Message": "Email must be a string!"}), 400
         validate_em = Validator.validate_email(auth["email"])
         if validate_em:
-            return jsonify({"Message": "Wrong email format: Enter a valid email address"}), 400
+            return jsonify({"Message":
+                            "Wrong email format: Enter a valid email address"}), 400
 
     def validate_make_admin(data):
         if not data:
@@ -124,13 +152,11 @@ class Validator(object):
             return jsonify({"Message": "Email must be a string!"}), 400
         validate_email = Validator.validate_email(data['email'])
         if validate_email:
-            return jsonify({"Message": "Wrong email format: Enter a valid email address"}), 400
+            return jsonify({"Message":
+                            "Wrong email format: Enter a valid email address"}), 400
 
     def validate_email(email):
         """This method uses a regular expression to validate email entered by user"""
         if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
             return True
         return False
-
-
-
