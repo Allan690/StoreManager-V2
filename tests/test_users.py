@@ -1,6 +1,8 @@
 import unittest
 import json
 from tests.test_basecase import TestSetUp
+from app.api.v2.models.database_models import DatabaseConnection
+db = DatabaseConnection()
 
 
 class UserLoginClass(TestSetUp):
@@ -22,12 +24,30 @@ class UserLoginClass(TestSetUp):
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
         resp_create_user = self.app.post("/api/v2/auth/signup",
-                                         data=json.dumps(dict(email="ballery@gmail.com",
-                                                              password="allangmailcompany", role="attendant")),
+                                         data=json.dumps(dict(email="ballery112@gmail.com",
+                                                              password="allan121lcompany", role="attendant")),
                                          content_type="application/json",
                                          headers=auth)
 
         self.assertEqual(resp_create_user.status_code, 201)
+
+    def test_unauthorized_user_tries_to_create_user(self):
+        """Tests that API prevents unauthorized user from creating a user"""
+        self.test_attendant_user_can_be_created()
+        resp_login = self.app.post("/api/v2/auth/login",
+                                   data=json.dumps(dict(email="ballery112@gmail.com",
+                                                        password="allan121lcompany", role="attendant")),
+                                   content_type="application/json")
+        print(resp_login)
+        result_login = json.loads(resp_login.data)
+        token = result_login['token']
+        auth = {"Authorization": "Bearer " + token}
+        resp_create_user = self.app.post("/api/v2/auth/signup",
+                                         data=json.dumps(dict(email="ballery112@gmail.com",
+                                                              password="allan121lcompany", role="attendant")),
+                                         content_type="application/json",
+                                         headers=auth)
+        self.assertEqual(resp_create_user.status_code, 401)
 
     def test_error_email_missing_attendant_register(self):
         """Tests error raised when email is missing during attendant signup"""
@@ -141,6 +161,43 @@ class UserLoginClass(TestSetUp):
         self.assertEqual(response.status_code, 200)
         response_msg = json.loads(response.data.decode("UTF-8"))
         self.assertIn("token", response_msg)
+
+    def test_attendant_make_admin(self):
+        """Tests that an attendant user can be made an admin"""
+        self.test_attendant_user_can_be_created()
+        resp_login = self.app.post("/api/v2/auth/login",
+                                   data=json.dumps(dict(email="allan@gmail.com",
+                                                        password="allangmailcompany", role="admin")),
+                                   content_type="application/json")
+        result_login = json.loads(resp_login.data)
+        token = result_login['token']
+        auth = {"Authorization": "Bearer " + token}
+        response = self.app.put("/api/v2/auth/make-admin",
+                                data=json.dumps(dict(email="ballery112@gmail.com")),
+                                content_type="application/json",
+                                headers=auth)
+        self.assertEqual(response.status_code, 200)
+
+    def test_unauthorized_make_user_admin(self):
+        """Tests that API prevents unauthorized user making another user admin"""
+        self.test_attendant_user_can_be_created()
+        resp_login = self.app.post("/api/v2/auth/login",
+                                   data=json.dumps(dict(email="ballery112@gmail.com",
+                                                        password="allan121lcompany", role="attendant")),
+                                   content_type="application/json")
+        result_login = json.loads(resp_login.data)
+        token = result_login['token']
+        auth = {"Authorization": "Bearer " + token}
+        response = self.app.put("/api/v2/auth/make-admin",
+                                data=json.dumps(dict(email="ballery112@gmail.com")),
+                                content_type="application/json",
+                                headers=auth)
+        self.assertEqual(response.status_code, 401)
+
+    def tearDown(self):
+        db.destroy_tables()
+        db.create_db_tables()
+
 
 if __name__ == '__main__':
     unittest.main()

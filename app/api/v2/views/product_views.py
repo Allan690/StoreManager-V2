@@ -13,15 +13,14 @@ users_obj = UserModel()
 
 # noinspection PyMethodParameters
 class ProductViews(object):
-
     @prod.route('/api/v2/products', methods=['POST'])
     @jwt_required
     def post_product():
         email = get_jwt_identity()
-        user = users_obj.get_role_by_email(email)
+        user = users_obj.get_user_by_email(email)
         role = user["role"]
         if role != "admin":
-            return jsonify({"Message": "You must be an admin to add a product"}), 403
+            return jsonify({"Message": "You must be an admin to add a product"}), 401
         data = request.get_json()
         validate = Validator(data)
         if validate.validate_product():
@@ -54,10 +53,10 @@ class ProductViews(object):
     def update_products(product_id):
         """Updates a specific product's details"""
         email = get_jwt_identity()
-        user = users_obj.get_role_by_email(email)
+        user = users_obj.get_user_by_email(email)
         role = user["role"]
         if role != "admin":
-            return jsonify({"Message": "You must be an admin to perform this action"}), 403
+            return jsonify({"Message": "You must be an admin to perform this action"}), 401
         data = request.get_json()
         validate = Validator(data)
         if validate.validate_product():
@@ -66,12 +65,19 @@ class ProductViews(object):
         resp = product_obj.get_product_by_id(product_id)
         if resp:
             product_obj.update_product(product_id)
-            return jsonify({"Product Profile": prod_obj.get_product_by_id(product_id)}), 200
+            return jsonify({"Message": "Product successfully updated",
+                            "Product Profile": prod_obj.get_product_by_id(product_id)
+                            }), 200
         return jsonify({"Message": "Product not found!"}), 404
 
     @prod.route('/api/v2/products/<int:product_id>', methods=['DELETE'])
     @jwt_required
     def delete_product_by_id(product_id):
+        email = get_jwt_identity()
+        user = users_obj.get_user_by_email(email)
+        role = user["role"]
+        if role != "admin":
+            return jsonify({"Message": "You must be an admin to sale a product"}), 401
         resp = prod_obj.get_product_by_id(product_id)
         if resp:
             prod_obj.delete_product(product_id)
@@ -83,18 +89,21 @@ class ProductViews(object):
     def create_sale_record():
         """Creates a sales record and saves it to the database"""
         email = get_jwt_identity()
-        user = users_obj.get_role_by_email(email)
+        user = users_obj.get_user_by_email(email)
         role = user["role"]
         if role != "attendant":
-            return jsonify({"Message": "You must be an attendant to sale a product"}), 403
+            return jsonify({"Message": "You must be an attendant to sale a product"}), 401
         data = request.get_json()
         validate = Validator(data)
         if validate.validate_sales():
             return validate.validate_sales()
-        user_id = data["user_id"]
-        prod_id = data["prod_id"]
-        sold_quantity = data["quantity"]
-        prod_price = data["prod_price"]
+        try:
+            user_id = data["user_id"]
+            prod_id = data["prod_id"]
+            sold_quantity = data["quantity"]
+            prod_price = data["prod_price"]
+        except KeyError:
+            return jsonify({"Message": "You have a missing parameter!"}), 400
         resp = prod_obj.get_product_by_id(prod_id)
         if resp[0]['prod_quantity'] > sold_quantity and resp[0]['prod_quantity'] > int(resp[0]['minimum_allowed']):
             prod_obj.update_prod_quantity(resp[0]["prod_quantity"] - sold_quantity, prod_id)

@@ -15,8 +15,8 @@ class TestSetUp(unittest.TestCase):
         self.unknown = dict(email="username@gmail.com", password="password")
         self.missing_email = dict(email="", password="testpass")
         self.product = dict(name="Shoe Polish", description="Kiwi Shoe Polish", price=1200, quantity=30)
-        self.new_product = dict(name="Kiatu mzuri", description="Ni kiatu tu", price=1200,
-                                quantity=30)
+        self.new_product = dict(prod_name="Bananas", prod_category="Fruits", prod_price=1200,
+                                prod_quantity=100, minimum_allowed=10, prod_description="Sweet bananas")
         self.empty_product = dict(name="", description="", price="", quantity=0)
         self.missing_prod_quantity = dict(name="Shoe", description="Ni kiatu tu", price=1200,
                                           quantity=0)
@@ -43,3 +43,10 @@ class TestSetUp(unittest.TestCase):
         self.password_spaced = dict(email="testuser5@gmail.com", password="  ")
         self.unknown_login = self.app.post("/api/v1/auth/login", data=json.dumps(self.unknown),
                                            content_type="application/json")
+
+    def tearDown(self):
+            db = DatabaseConnection()
+            db.destroy_tables()
+            db.create_db_tables()
+
+

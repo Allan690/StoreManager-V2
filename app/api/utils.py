@@ -54,6 +54,10 @@ class Validator(object):
             return jsonify({"Message": "Quantity must be a number!"}), 400
         if not isinstance(data['prod_price'], int):
             return jsonify({"Message": "Price must be a number!"}), 400
+        if not data['prod_category'] or data['prod_category'] == "":
+            return jsonify({"Message": "Product category required"}), 400
+        if not isinstance(data['prod_category'], str):
+            return jsonify({"Message": "Product category must be a string!"}), 400
         if not isinstance(data['minimum_allowed'], int):
             return jsonify({"Message": "Minimum allowed quantity must be a number!"}), 400
         if not data['minimum_allowed'] or data['minimum_allowed'] == 0:
@@ -105,6 +109,22 @@ class Validator(object):
             return jsonify({"Message": "Email is required"}), 401
         if not auth['password']:
             return jsonify({"Message": "password is required"}), 401
+        if not isinstance(auth['password'], str):
+            return jsonify({"Message": "Password must be a string!"}), 400
+        if not isinstance(auth['email'], str):
+            return jsonify({"Message": "Email must be a string!"}), 400
+        validate_em = Validator.validate_email(auth["email"])
+        if validate_em:
+            return jsonify({"Message": "Wrong email format: Enter a valid email address"}), 400
+
+    def validate_make_admin(data):
+        if not data:
+            return jsonify({"Message": "Email is required"}), 401
+        if not isinstance(data["email"], str):
+            return jsonify({"Message": "Email must be a string!"}), 400
+        validate_email = Validator.validate_email(data['email'])
+        if validate_email:
+            return jsonify({"Message": "Wrong email format: Enter a valid email address"}), 400
 
     def validate_email(email):
         """This method uses a regular expression to validate email entered by user"""
