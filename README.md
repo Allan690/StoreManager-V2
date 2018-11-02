@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.com/Allan690/StoreManager-V2.svg?branch=develop)](https://travis-ci.com/Allan690/StoreManager-V2)
-[![Coverage Status](https://coveralls.io/repos/github/Allan690/StoreManager-V2/badge.svg?branch=develop)]
+![Coverage Status](https://coveralls.io/repos/github/Allan690/StoreManager-V2/badge.svg?branch=develop)
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/3b5f48196e4b3a68d97c)
 
 # Store Manager-API v2
