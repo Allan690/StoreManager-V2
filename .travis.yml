@@ -1,15 +1,15 @@
 language : python
 python :
   - "3.6"
+services:
+  - postgresql
 install:
   - pip install -r requirements.txt
   - pip install coveralls
-before_script:  # code coverage tool
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
+before_script:
+  - psql -c 'create database stores_testdb' -U postgres
 script:
-  - nosetests --with-coverage --cover-package=app
+  -  py.test --cov=app tests/
   - coveralls
 after_success:
  - coveralls

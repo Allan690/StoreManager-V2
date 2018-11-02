@@ -3,7 +3,8 @@ from flask import jsonify, request, Blueprint
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from ..models.user_models import UserModel
-from ...utils import Validator
+from ...utils import Validator, KeyValidators
+
 user_dec = Blueprint('v1_user', __name__)
 user_obj = UserModel()
 
@@ -20,14 +21,22 @@ class UserViews(object):
         user = user_obj.get_user_by_email(email)
         role = user["role"]
         if role != "admin":
-            return jsonify({"Message": "You must be an admin to perform this action"}), 401
+            return jsonify({"Message":
+                            "You must be an admin to perform this action"}), 401
         data = request.get_json()
+        key_valid = KeyValidators(data)
+        if key_valid.check_missing_keys_in_login():
+            key_valid.check_missing_keys_in_login()
         validate = Validator(data)
-        if validate.validate_user():
-            return validate.validate_user()
+        try:
+            if validate.validate_user():
+                return validate.validate_user()
+        except KeyError:
+            return jsonify({"Message": "You have missing keys. "
+                                       "Please check that your request has email and password keys"}), 400
         password_hash = generate_password_hash(data['password'], method='sha256')
         email = data["email"]
-        role = data["role"]
+        role = "attendant"
         user = UserModel(email, password_hash, role)
         user.create_attendant_user()
         return jsonify({"Message": "Attendant user registered successfully"}), 201
@@ -41,7 +50,7 @@ class UserViews(object):
             return validate.validate_user()
         password_hash = generate_password_hash(data['password'], method='sha256')
         email = data["email"]
-        role = data["role"]
+        role = "admin"
         user = UserModel(email, password_hash, role)
         user.create_admin_user()
         return jsonify({"Message": "Admin user registered successfully"}), 201
@@ -54,8 +63,11 @@ class UserViews(object):
         user = user_obj.get_user_by_email(email)
         role = user["role"]
         if role != "admin":
-            return jsonify({"Message": "You must be an admin to perform this action"}), 401
+            return jsonify({"Message":
+                            "You must be an admin to perform this action"}), 401
         data = request.get_json()
+        if 'email' not in data:
+            return jsonify({"Message": "Email field is required!"}), 400
         validate = Validator(data)
         if validate.validate_make_admin():
             return validate.validate_make_admin()
@@ -73,7 +85,8 @@ class UserViews(object):
         user = user_obj.get_user_by_email(email)
         role = user["role"]
         if role != "admin":
-            return jsonify({"Message": "You must be an admin to perform this action"}), 403
+            return jsonify({"Message":
+                            "You must be an admin to perform this action"}), 403
         users = user_obj.get_all_users()
         return jsonify({"Users": users}), 200
 
@@ -81,13 +94,18 @@ class UserViews(object):
     def login_user():
         data = request.get_json()
         validate = Validator(data)
+        key_valid = KeyValidators(data)
+        if key_valid.check_missing_keys_in_login():
+            return key_valid.check_missing_keys_in_login()
         if validate.validate_login():
             return validate.validate_login()
         users = user_obj.get_all_users()
         for user in users:
             if check_password_hash(user['password'], data['password']):
-                access_token = create_access_token(identity=data["email"],
-                                                   expires_delta=datetime.timedelta(minutes=30))
-                return jsonify({"token": access_token}), 200
+                access_token = create_access_token(
+                    identity=data["email"],
+                    expires_delta=datetime.timedelta(minutes=30
+                                                     ))
+                return jsonify({"Message": "User logged in successfully!",
+                                "token": access_token}), 200
         return jsonify({"Message": "User not found!"}), 404
-
