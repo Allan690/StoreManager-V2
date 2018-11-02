@@ -76,12 +76,15 @@ class UserModel(DatabaseConnection):
         if 'pytest' in modules or 'nosetests' in modules:
             params = test_config()
             self.conn = psycopg2.connect(**params)
+            query = "SELECT * FROM users where email = 'allan@gmail.com'"
             cursor = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-            password_hash = generate_password_hash('allangmailcompany', method='sha256')
-            cursor.execute(
-                "INSERT INTO users(email, password, role) VALUES('allan@gmail.com', %s, 'admin')"
-                "on conflict(email) do nothing;", (password_hash,)
-            )
+            cursor.execute(query)
+            res = cursor.fetchone()
+            if not res:
+                password_hash = generate_password_hash('allangmailcompany', method='sha256')
+                cursor.execute(
+                    "INSERT INTO users(email, password, role) VALUES('allan@gmail.com', %s, 'admin')", (password_hash,)
+                )
             self.conn.commit()
         else:
             params = config()
