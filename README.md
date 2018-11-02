@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/Allan690/StoreManager-V2.svg?branch=develop)](https://travis-ci.com/Allan690/StoreManager-V2)
 ![Coverage Status](https://coveralls.io/repos/github/Allan690/StoreManager-V2/badge.svg?branch=develop)
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/3b5f48196e4b3a68d97c)
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/a3f6bf3305b4b7576318)
 
 # Store Manager-API v2
 Store Manager API is a flask RESTful API that implements token based authentication with endpoints that enable the user
