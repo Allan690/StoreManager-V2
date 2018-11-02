@@ -8,6 +8,8 @@ install:
   - pip install coveralls
 before_script:
   - cp testdb.ini.example testdb.ini
+  - cp dbConfig.py dbConfig.py
+
   - psql -c 'create database stores_testdb' -U postgres
 script:
   -  py.test --cov=app tests/
