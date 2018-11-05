@@ -27,7 +27,7 @@ class UserLoginClass(TestSetUp):
                                          data=json.dumps(
                                              dict(
                                                  email="ballery112@gmail.com",
-                                                  password="allan121lcompany")),
+                                                 password="allan121lcompany")),
                                          content_type="application/json",
                                          headers=auth)
 
@@ -49,7 +49,7 @@ class UserLoginClass(TestSetUp):
                                          data=json.dumps(
                                              dict(
                                                  email="ballery112@gmail.com",
-                                                  password="allan121lcompany")),
+                                                 password="allan121lcompany")),
                                          content_type="application/json",
                                          headers=auth)
         self.assertEqual(resp_create_user.status_code, 401)
@@ -66,7 +66,8 @@ class UserLoginClass(TestSetUp):
         auth = {"Authorization": "Bearer " + token}
         response = self.app.post("/api/v2/auth/signup",
                                  data=json.dumps(dict(email="",
-                                                      password="allangmailcompany")),
+                                                      password="allangmailcompany")
+                                                 ),
                                  content_type="application/json",
                                  headers=auth)
         self.assertEqual(response.status_code, 400)

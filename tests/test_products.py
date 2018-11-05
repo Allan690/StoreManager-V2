@@ -8,6 +8,7 @@ class TestProductModel(TestSetUp):
 
     def test_product_creation(self):
         """Tests whether our API can create a product"""
+        # login the admin
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(
                                        dict(email="allan@gmail.com",
@@ -16,6 +17,7 @@ class TestProductModel(TestSetUp):
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
+        # create a product
         response = self.app.post('/api/v2/products',
                                  data=json.dumps(
                                      dict(prod_name="Bananas",
@@ -32,7 +34,8 @@ class TestProductModel(TestSetUp):
 
     def test_product_access_with_invalid_token(self):
         """Raise unauthorized error when invalid token is used"""
-        """Login the admin"""
+
+        # login the admin
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(
                                        dict(email="allan@gmail.com",
@@ -41,7 +44,7 @@ class TestProductModel(TestSetUp):
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth1 = {"Authorization": "Bearer " + token}
-        """Sign up an attendant"""
+        # sign up an attendant
         resp_create_user = self.app.post("/api/v2/auth/signup",
                                          data=json.dumps(
                                              dict(
@@ -49,7 +52,7 @@ class TestProductModel(TestSetUp):
                                                   password="allan121lcompany")),
                                          content_type="application/json",
                                          headers=auth1)
-        """Login the attendant"""
+        # login the attendant
         self.assertEqual(resp_create_user.status_code, 201)
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(
@@ -59,7 +62,7 @@ class TestProductModel(TestSetUp):
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
-        """Try to use attendant's token to create a product"""
+        # try to use attendant's token to create a product
         response = self.app.post("/api/v2/products",
                                  data=json.dumps(
                                      dict(prod_name="Mangoes",
@@ -74,9 +77,9 @@ class TestProductModel(TestSetUp):
 
     def test_find_product_by_id(self):
         """Tests whether our API can find a product by its id"""
-        """create the product"""
+        # create the product
         self.test_product_creation()
-        """login a user"""
+        # login a user
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(
                                        dict(email="allan@gmail.com",
@@ -85,16 +88,17 @@ class TestProductModel(TestSetUp):
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
-        """Find a product by id"""
+        # find a product by id
         resp = self.app.get('/api/v2/products/1', headers=auth)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.content_type, 'application/json')
 
     def test_get_all_products(self):
         """Test whether API can list all products in the database"""
-        """create a product"""
+
+        # create the product
         self.test_product_creation()
-        """Login the user"""
+        # login the user
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(
                                        dict(email="allan@gmail.com",
@@ -103,14 +107,14 @@ class TestProductModel(TestSetUp):
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
-        """Fetch all items in the database"""
+        # fetch all items from the database
         resp = self.app.get('/api/v2/products', headers=auth)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.content_type, 'application/json')
 
     def test_missing_product_name(self):
         """Test that API should not accept missing product name"""
-        """Login a user"""
+        # login a user
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(
                                        dict(email="allan@gmail.com",
@@ -119,7 +123,7 @@ class TestProductModel(TestSetUp):
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
-        """Post a product without name"""
+        # post a product without a name
         response = self.app.post("/api/v2/products",
                                  data=json.dumps(
                                      dict(prod_name="",
@@ -136,7 +140,7 @@ class TestProductModel(TestSetUp):
 
     def test_missing_product_descr(self):
         """Test that API should not accept missing product description"""
-        """Login a user"""
+        # login admin user
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(
                                        dict(email="allan@gmail.com",
@@ -145,7 +149,7 @@ class TestProductModel(TestSetUp):
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
-        """Add a product without description"""
+        # add a product without description
         response = self.app.post("/api/v2/products",
                                  data=json.dumps(dict(
                                      prod_name="Bananas",
@@ -162,7 +166,7 @@ class TestProductModel(TestSetUp):
 
     def test_missing_category(self):
         """Test that API should not accept missing product category"""
-        """Login a user"""
+        # login admin user
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(
                                        dict(email="allan@gmail.com",
@@ -171,7 +175,7 @@ class TestProductModel(TestSetUp):
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
-        """Add a product without category"""
+        # add a product without category
         response = self.app.post("/api/v2/products",
                                  data=json.dumps(
                                      dict(prod_name="Bananas",
@@ -188,7 +192,7 @@ class TestProductModel(TestSetUp):
 
     def test_product_price_string(self):
         """"Tests that the API should not accept product price as a string"""
-        """Login the user"""
+        # login admin user
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(
                                        dict(email="allan@gmail.com",
@@ -197,7 +201,7 @@ class TestProductModel(TestSetUp):
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
-        """Try posting a product with price as string"""
+        # try posting a product with price as string
         response = self.app.post("/api/v2/products",
                                  data=json.dumps(
                                      dict(prod_name="Bananas",
@@ -214,7 +218,7 @@ class TestProductModel(TestSetUp):
 
     def test_quantity_string(self):
         """Tests that the API should not accept quantities that are strings"""
-        """Login the user"""
+        # login the admin
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(
                                        dict(email="allan@gmail.com",
@@ -223,7 +227,7 @@ class TestProductModel(TestSetUp):
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
-        """Add a product with quantity as string"""
+        # add a product with quantity as a string
         response = self.app.post("/api/v2/products",
                                  data=json.dumps(
                                      dict(prod_name="Bananas",
@@ -240,7 +244,7 @@ class TestProductModel(TestSetUp):
 
     def test_min_allowed_string(self):
         """Tests that the API should not accept minimum allowed quantity as a string"""
-        """Login the user"""
+        # login the user
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(dict(email="allan@gmail.com",
                                                         password="allangmailcompany")),
@@ -248,7 +252,7 @@ class TestProductModel(TestSetUp):
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
-        """Add a product with min allowed quantity as string"""
+        # add a product with minimum allowed quantity as a string
         response = self.app.post("/api/v2/products",
                                  data=json.dumps(
                                      dict(prod_name="Bananas",
@@ -265,9 +269,9 @@ class TestProductModel(TestSetUp):
 
     def test_product_update(self):
         """Tests that the API can update a product"""
-        """Create a product"""
+        # create a product
         self.test_product_creation()
-        """Login the admin user and get token"""
+        # login the admin
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(dict(email="allan@gmail.com",
                                                         password="allangmailcompany")),
@@ -275,7 +279,7 @@ class TestProductModel(TestSetUp):
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
-        """Update the product"""
+        # update the product
         response = self.app.put("/api/v2/products/1",
                                 data=json.dumps(
                                     dict(prod_name="Apples",
@@ -292,9 +296,9 @@ class TestProductModel(TestSetUp):
 
     def test_product_update_unauthorized_user(self):
         """Tests that the API prevents an unauthorized user from updating a product"""
-        """Create a product"""
+        # create a product
         self.test_product_creation()
-        """Login the admin"""
+        # login the admin
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(
                                        dict(email="allan@gmail.com",
@@ -303,14 +307,14 @@ class TestProductModel(TestSetUp):
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth1 = {"Authorization": "Bearer " + token}
-        """Sign up an attendant"""
+        # sign up an attendant user
         resp_create_user = self.app.post("/api/v2/auth/signup",
                                          data=json.dumps(
                                              dict(email="ballery112@gmail.com",
                                                   password="allan121lcompany")),
                                          content_type="application/json",
                                          headers=auth1)
-        """Login the attendant"""
+        # login the attendant
         self.assertEqual(resp_create_user.status_code, 201)
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(
@@ -320,7 +324,7 @@ class TestProductModel(TestSetUp):
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
-        """Try to update product using attendant's token"""
+        # try to update the product using attendant's token
         response = self.app.put("/api/v2/products/1",
                                 data=json.dumps(
                                     dict(prod_name="Apples",
@@ -337,9 +341,9 @@ class TestProductModel(TestSetUp):
 
     def test_product_delete(self):
         """Tests that the API can delete a product."""
-        """create a product"""
+        # create a product
         self.test_product_creation()
-        """Login the admin user and get token"""
+        # login the admin
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(
                                        dict(email="allan@gmail.com",
@@ -348,7 +352,7 @@ class TestProductModel(TestSetUp):
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
-        """Delete the product"""
+        # delete the product
         response = self.app.delete("/api/v2/products/1",
                                    content_type="application/json",
                                    headers=auth)
@@ -359,9 +363,9 @@ class TestProductModel(TestSetUp):
     def test_invalid_delete_request(self):
         """Tests that the API raises an error when user
          places an invalid delete request"""
-        """create a product"""
+        # create a product
         self.test_product_creation()
-        """Login the admin user and get token"""
+        # login the admin
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(
                                        dict(email="allan@gmail.com",
@@ -370,7 +374,7 @@ class TestProductModel(TestSetUp):
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
-        """Try to delete non-existent product"""
+        # try to delete non-existent product
         response = self.app.delete("/api/v2/products/28",
                                    content_type="application/json",
                                    headers=auth)
@@ -380,9 +384,9 @@ class TestProductModel(TestSetUp):
 
     def test_unauthorized_delete(self):
         """Tests that API prevents unauthorized user from deleting a product"""
-        """create a product"""
+        # create a product
         self.test_product_creation()
-        """Login the admin user and get token"""
+        # login the admin
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(dict(email="allan@gmail.com",
                                                         password="allangmailcompany")),
@@ -390,13 +394,13 @@ class TestProductModel(TestSetUp):
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
-        """Sign up an attendant"""
+        # Sign up an attendant
         resp_create_user = self.app.post("/api/v2/auth/signup",
                                          data=json.dumps(dict(email="ballery112@gmail.com",
                                                               password="allan121lcompany")),
                                          content_type="application/json",
                                          headers=auth)
-        """Login the attendant"""
+        # Login the attendant
         self.assertEqual(resp_create_user.status_code, 201)
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(dict(email="ballery112@gmail.com",
@@ -405,7 +409,7 @@ class TestProductModel(TestSetUp):
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth1 = {"Authorization": "Bearer " + token}
-        """Try deleting a product with attendant's token"""
+        # Try deleting a product with attendant's token
         response = self.app.delete("/api/v2/products/1",
                                    content_type="application/json",
                                    headers=auth1)
@@ -416,9 +420,10 @@ class TestProductModel(TestSetUp):
     def test_for_non_duplicates(self):
         """Tests that API raises an error if you try to add a
          product that is in the  database"""
-        """create a product"""
+
+        # create a product
         self.test_product_creation()
-        """Login the admin user and get token"""
+        # login the admin user
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(dict(email="allan@gmail.com",
                                                         password="allangmailcompany")),
@@ -426,7 +431,7 @@ class TestProductModel(TestSetUp):
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
-        """Try to add the same product you already created"""
+        # try adding same product you created
         response = self.app.post("/api/v2/products",
                                  data=json.dumps(
                                      dict(prod_name="Bananas",
