@@ -162,3 +162,9 @@ def get_sales_by_id(sales_id):
         return jsonify({"Message": "Sales record not found!"}), 404
     return jsonify({"Message": "Sale retrieved successfully",
                     "Sale Profile": sale}), 200
+
+
+@prod.errorhandler(404)
+def page_not_found(e):
+    """Returns an error message if page is missing or route is wrong"""
+    return jsonify({"Message": "The page is missing. Please check your route!"}), 404

@@ -94,6 +94,7 @@ def get_all_users():
 
 @user_dec.route('/api/v2/auth/login', methods=['POST'])
 def login_user():
+    """Logs in the user"""
     data = request.get_json()
     validate = Validator(data)
     key_valid = KeyValidators(data)
@@ -111,3 +112,9 @@ def login_user():
             return jsonify({"Message": "User logged in successfully!",
                             "token": access_token}), 200
     return jsonify({"Message": "User not found!"}), 404
+
+
+@user_dec.errorhandler(404)
+def page_not_found(e):
+    """Returns an error message if page is missing or route is wrong"""
+    return jsonify({"Message": "The page is missing. Please check your route!"}), 404

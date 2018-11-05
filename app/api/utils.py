@@ -92,6 +92,10 @@ class Validator(object):
         for product in products:
             if data["prod_name"] == product["prod_name"]:
                 return jsonify({'Message': "Product already exists"}), 400
+            prod_name_db = str(data["prod_name"])
+            prod_name_supplied = str(product["prod_name"])
+            if prod_name_db.lower() == prod_name_supplied:
+                return jsonify({'Message': "Product already exists"}), 400
 
     def validate_update(data):
         if data["prod_name"]:
@@ -160,3 +164,7 @@ class Validator(object):
         if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
             return True
         return False
+
+
+
+
