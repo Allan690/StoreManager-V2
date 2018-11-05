@@ -13,7 +13,7 @@ to:
 ## Example request with response
 ```
 curl --request POST \
-  --url https://store-manager-api-app-v1.herokuapp.com/api/v1/auth/register \
+  --url https://store-manager-api-app-v1.herokuapp.com/api/v1/auth/signup \
   --header 'Content-Type: application/json' \
   --data '{
   "email": "testuser999@gmail.com",
@@ -101,7 +101,7 @@ https://store-manager-api-app-v2.herokuapp.com/
 ## API documentation
 https://documenter.getpostman.com/view/4671755/RzZ4qMsY#443dc4b0-c24e-4169-a370-fe1682102c4f
 - *Note*: if using the above documentation for running the application on your local machine, just replace the heroku app
-link with your localhost e.g `localhost:5000/api/v1/auth/register` for the registration endpoint
+link with your localhost e.g `localhost:5000/api/v2/auth/signup` for the registration endpoint
 
 ## Built With
 * [Flask](http://flask.pocoo.org/) -  The web framework used
