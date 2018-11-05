@@ -96,7 +96,7 @@ port=5432
 
 
 ## Heroku application
-https://store-manager-api-app-v1.herokuapp.com/
+https://store-manager-api-app-v2.herokuapp.com/
 
 ## API documentation
 https://documenter.getpostman.com/view/4671755/RzZ4qMsY#443dc4b0-c24e-4169-a370-fe1682102c4f
