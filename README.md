@@ -12,32 +12,15 @@ to:
 
 ## Example request with response
 ```
-curl --request POST \
-  --url https://store-manager-api-app-v1.herokuapp.com/api/v1/auth/signup \
-  --header 'Content-Type: application/json' \
-  --data '{
-  "email": "testuser999@gmail.com",
-  "password": "testuserpass"
+curl -X POST \
+  --url 'http://localhost:5000/api/v2/auth/signup' \
+  -H 'Authorization: Bearer OAuthAccessToken'\
+  -H 'Accept: application/json'\
+  -H 'Content-Type: application/json' \
+  --data-raw '{
+  "email": "sam1@andela.com",
+  "password": "sam1234567"
 }'
-
-Response body
-{
-"message": "User registered successfully"
-}
-
-Response code 
-{
-201
-}
-Response header
-{
-"connection":"keep-alive"
-"content-length" :"48"
-"content-type": "application/json"
-"date": "Sat, 20 Oct 2018 12:37:59 GMT"
-"server": "gunicorn/19.9.0"
-"via": "1.1 vegur"
-}
 
 ```
 
