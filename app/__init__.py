@@ -27,3 +27,14 @@ def handle_405_errors(e):
     ), 405
 
 
+@flask_app.errorhandler(500)
+def handle_500_errors(e):
+    return jsonify(
+        {"Message": "There was an internal server error."}
+    ), 500
+
+
+@flask_app.route('/')
+def index_route():
+    """Defines the index route"""
+    return "<p>Find the app documentation <a href='https://apimatic.io/apidocs/storemanager-api-v2/'>here</a></p>"
