@@ -1,4 +1,5 @@
 import psycopg2
+from psycopg2 import extras
 from dbConfig import config, test_config
 from sys import modules
 
@@ -7,6 +8,7 @@ class DatabaseConnection(object):
     def __init__(self):
         self.conn = None
         self.cur = None
+        self.db = None
 
     def create_db_tables(self):
         """Creates the database tables for users, products and sales"""
@@ -41,25 +43,36 @@ class DatabaseConnection(object):
                 )
             """
         )
-        try:
-            if 'pytest' in modules or 'nosetests' in modules:
-                params = test_config()
-                self.conn = psycopg2.connect(**params)
-                self.cur = self.conn.cursor()
-                for command in tbl_commands:
-                    self.cur.execute(command)
-                self.conn.commit()
+        for command in tbl_commands:
+            cursor = self.cursor_obj()
+            if cursor:
+                cursor.execute(command)
             else:
-                params = config()
-                self.conn = psycopg2.connect(**params)
-                self.cur = self.conn.cursor()
-                for command in tbl_commands:
-                    self.cur.execute(command)
-                self.conn.commit()
+                return 'error connecting to the database'
 
-        except Exception as e:
-            print(e)
-            return "error connecting to the database because {e}"
+    @staticmethod
+    def __connection():
+        """Creates a connection to the database"""
+        if 'pytest' in modules or 'nosetests' in modules:
+            params = test_config()
+        else:
+            params = config()
+        return psycopg2.connect(
+            **params
+        )
+
+    def get_connection(self):
+        """Gets the connection parameters specified above"""
+        self.db = DatabaseConnection()
+        self.conn = self.db.__connection()
+        self.conn.autocommit = True
+        return self.conn
+
+    def cursor_obj(self):
+        """Defines the cursor"""
+        self.db = DatabaseConnection()
+        self.cur = self.db.get_connection().cursor(cursor_factory=extras.RealDictCursor)
+        return self.cur
 
     def destroy_tables(self):
         """Destroys the database objects"""
@@ -69,17 +82,9 @@ class DatabaseConnection(object):
             " DROP TABLE IF EXISTS sales CASCADE"
         ]
         for command in drop_commands:
-            if 'pytest' in modules or 'nosetests' in modules:
-                params = test_config()
-                self.conn = psycopg2.connect(**params)
-                self.cur = self.conn.cursor()
-                self.cur.execute(command)
-                self.conn.commit()
+            cursor = self.cursor_obj()
+            if cursor:
+                cursor.execute(command)
             else:
-                params = config()
-                self.conn = psycopg2.connect(**params)
-                self.cur = self.conn.cursor()
-                self.cur.execute(command)
-                self.conn.commit()
-
+                return 'error connecting to the database'
 

@@ -11,11 +11,9 @@ sales_obj = SalesModel()
 users_obj = UserModel()
 
 
-# noinspection PyMethodParameters
-class ProductViews(object):
-    @prod.route('/api/v2/products', methods=['POST'])
-    @jwt_required
-    def post_product():
+@prod.route('/api/v2/products', methods=['POST'])
+@jwt_required
+def post_product():
         email = get_jwt_identity()
         user = users_obj.get_user_by_email(email)
         role = user["role"]
@@ -34,27 +32,30 @@ class ProductViews(object):
         return jsonify({"Message": "Product registered successfully",
                         "Products Profile": product.get_all_products()}), 201
 
-    @prod.route('/api/v2/products', methods=['GET'])
-    @jwt_required
-    def get_all_products():
+
+@prod.route('/api/v2/products', methods=['GET'])
+@jwt_required
+def get_all_products():
         """Fetches all products from the database and returns them"""
         prods = prod_obj.get_all_products()
         if len(prods) > 0:
             return jsonify({"All products": prods}), 200
         return jsonify({"Message": "Product list empty!"}), 404
 
-    @prod.route('/api/v2/products/<int:product_id>', methods=['GET'])
-    @jwt_required
-    def get_products_by_id(product_id):
+
+@prod.route('/api/v2/products/<int:product_id>', methods=['GET'])
+@jwt_required
+def get_products_by_id(product_id):
         """Fetches a product using supplied product id"""
         product = prod_obj.get_product_by_id(product_id)
         if not product or len(product) == 0:
             return jsonify({"Message": "Product list is empty!"}), 404
         return jsonify({"Product Profile": product}), 200
 
-    @prod.route('/api/v2/products/<int:product_id>', methods=['PUT'])
-    @jwt_required
-    def update_products(product_id):
+
+@prod.route('/api/v2/products/<int:product_id>', methods=['PUT'])
+@jwt_required
+def update_products(product_id):
         """Updates a specific product's details"""
         email = get_jwt_identity()
         user = users_obj.get_user_by_email(email)
@@ -79,9 +80,10 @@ class ProductViews(object):
                             }), 200
         return jsonify({"Message": "Product not found!"}), 404
 
-    @prod.route('/api/v2/products/<int:product_id>', methods=['DELETE'])
-    @jwt_required
-    def delete_product_by_id(product_id):
+
+@prod.route('/api/v2/products/<int:product_id>', methods=['DELETE'])
+@jwt_required
+def delete_product_by_id(product_id):
         email = get_jwt_identity()
         user = users_obj.get_user_by_email(email)
         role = user["role"]
@@ -94,9 +96,10 @@ class ProductViews(object):
             return jsonify({"Message": "Product deleted successfully!"}), 200
         return jsonify({"Message": "Product not found!"}), 404
 
-    @prod.route('/api/v2/sales', methods=['POST'])
-    @jwt_required
-    def create_sale_record():
+
+@prod.route('/api/v2/sales', methods=['POST'])
+@jwt_required
+def create_sale_record():
         """Creates a sales record and saves it to the database"""
         email = get_jwt_identity()
         user = users_obj.get_user_by_email(email)
@@ -118,10 +121,10 @@ class ProductViews(object):
         except KeyError:
             return jsonify({"Message": "You have a missing parameter!"}), 400
         resp = prod_obj.get_product_by_id(prod_id)
-        prod_price = resp[0]['prod_price']
-        if resp[0]['prod_quantity'] > sold_quantity\
-                and resp[0]['prod_quantity'] > int(resp[0]['minimum_allowed']):
-            prod_obj.update_prod_quantity(resp[0]["prod_quantity"] - sold_quantity, prod_id)
+        prod_price = resp['prod_price']
+        if resp['prod_quantity'] > sold_quantity\
+                and resp['prod_quantity'] > int(resp['minimum_allowed']):
+            prod_obj.update_prod_quantity(resp["prod_quantity"] - sold_quantity, prod_id)
             sale_obj = SalesModel(user_id, prod_id, sold_quantity, prod_price)
             sale_obj.create_sale_record()
             return jsonify({"Message":
@@ -129,9 +132,10 @@ class ProductViews(object):
         return jsonify({"Message":
                         "Sold quantity exceeds what is in stock!"}), 400
 
-    @prod.route('/api/v2/sales', methods=['GET'])
-    @jwt_required
-    def get_all_sales():
+
+@prod.route('/api/v2/sales', methods=['GET'])
+@jwt_required
+def get_all_sales():
         """Fetches all sales from the database"""
         email = get_jwt_identity()
         user = users_obj.get_user_by_email(email)
@@ -148,12 +152,13 @@ class ProductViews(object):
                         "All Sales": sales
                         }), 200
 
-    @prod.route('/api/v2/sales/<int:sales_id>', methods=['GET'])
-    @jwt_required
-    def get_sales_by_id(sales_id):
-        """Fetches a sale from the database using supplied id"""
-        sale = sales_obj.get_sale_by_id(sales_id)
-        if len(sale) == 0:
-            return jsonify({"Message": "Sales record not found!"}), 404
-        return jsonify({"Message": "Sale retrieved successfully",
-                        "Sale Profile": sale}), 200
+
+@prod.route('/api/v2/sales/<int:sales_id>', methods=['GET'])
+@jwt_required
+def get_sales_by_id(sales_id):
+    """Fetches a sale from the database using supplied id"""
+    sale = sales_obj.get_sale_by_id(sales_id)
+    if len(sale) == 0:
+        return jsonify({"Message": "Sales record not found!"}), 404
+    return jsonify({"Message": "Sale retrieved successfully",
+                    "Sale Profile": sale}), 200
