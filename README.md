@@ -21,6 +21,10 @@ curl -X POST \
   "email": "sam1@andela.com",
   "password": "sam1234567"
 }'
+Response body
+{
+  "Message": "Attendant user registered successfully"
+}
 
 ```
 
