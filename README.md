@@ -63,7 +63,6 @@ port=5432
 ## Running it on machine
 - Create a .env file to store your environment variables: `touch .env`
 - In the `.env` file add this lines: `export SECRET=<your-secret-key-here` and `export FLASK_APP="run.py"`
-- Create a file at the root directory called `db.ini` and enter the following into it:
 - On terminal do: `source .env`
 - Run the application: `flask run`
 - The api endpoints can be consumed using postman.
