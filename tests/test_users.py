@@ -39,7 +39,7 @@ class UserLoginClass(TestSetUp):
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(
                                        dict(email="ballery112@gmail.com",
-                                            password="allan121lcompany",)),
+                                            password="allan121lcompany", )),
                                    content_type="application/json")
         print(resp_login)
         result_login = json.loads(resp_login.data)
@@ -253,6 +253,17 @@ class UserLoginClass(TestSetUp):
         self.assertEqual(resp_create_user.status_code, 400)
         response_msg = json.loads(resp_create_user.data.decode("UTF-8"))
         self.assertIn("missing keys", response_msg["Message"])
+
+    def test_wrong_email_used_login(self):
+        """Tests that the API raises an error message when the user enters a non-existent email"""
+        response = self.app.post("/api/v2/auth/login",
+                                 data=json.dumps(
+                                     dict(email="allan@hotmail.com",
+                                          password="allangmailcompany")),
+                                 content_type="application/json")
+        self.assertEqual(response.status_code, 404)
+        response_msg = json.loads(response.data.decode("UTF-8"))
+        self.assertIn("User not found!", response_msg["Message"])
 
 
 if __name__ == '__main__':
