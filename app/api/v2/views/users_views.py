@@ -104,13 +104,16 @@ def login_user():
         return validate.validate_login()
     users = user_obj.get_all_users()
     for user in users:
-        if check_password_hash(user['password'], data['password']):
-            access_token = create_access_token(
-                identity=data["email"],
-                expires_delta=datetime.timedelta(minutes=30
-                                                 ))
-            return jsonify({"Message": "User logged in successfully!",
-                            "token": access_token}), 200
+        if user['email'] == data['email']:
+            if check_password_hash(user['password'], data['password']):
+                access_token = create_access_token(
+                    identity=data["email"],
+                    expires_delta=datetime.timedelta(minutes=30
+                                                     ))
+                return jsonify({"Message": "User logged in successfully!",
+                                "token": access_token}), 200
+        else:
+            return jsonify({"Message": "User not found! Check your login details"}), 404
     return jsonify({"Message": "User not found!"}), 404
 
 
