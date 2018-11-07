@@ -44,7 +44,6 @@ class UserModel(DatabaseConnection):
                 "INSERT INTO users(email, password, role) VALUES('allan@gmail.com', %s, 'admin')", (password_hash,)
             )
 
-
     def get_all_users(self):
         """Fetches all users from the database"""
         command = "SELECT * FROM users"

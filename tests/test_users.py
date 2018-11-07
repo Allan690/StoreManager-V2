@@ -263,7 +263,7 @@ class UserLoginClass(TestSetUp):
                                  content_type="application/json")
         self.assertEqual(response.status_code, 404)
         response_msg = json.loads(response.data.decode("UTF-8"))
-        self.assertIn("User not found! Check your login details", response_msg["Message"])
+        self.assertIn("User not found!", response_msg["Message"])
 
 
 if __name__ == '__main__':

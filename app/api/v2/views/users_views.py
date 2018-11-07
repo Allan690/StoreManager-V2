@@ -30,7 +30,8 @@ def create_attendant_user():
             return validate.validate_user()
     except KeyError:
         return jsonify({"Message": "You have missing keys. "
-                                   "Please check that your request has email and password keys"}), 400
+                                   "Please check that your request has "
+                                   "email and password keys"}), 400
     password_hash = generate_password_hash(data['password'], method='sha256')
     email = data["email"]
     role = "attendant"
@@ -102,18 +103,16 @@ def login_user():
         return key_valid.check_missing_keys_in_login()
     if validate.validate_login():
         return validate.validate_login()
-    users = user_obj.get_all_users()
-    for user in users:
-        if user['email'] == data['email']:
-            if check_password_hash(user['password'], data['password']):
+    user = UserModel.get_user_by_email(data['email'])
+    if user:
+        if check_password_hash(user['password'], data['password']):
                 access_token = create_access_token(
                     identity=data["email"],
                     expires_delta=datetime.timedelta(minutes=30
                                                      ))
                 return jsonify({"Message": "User logged in successfully!",
                                 "token": access_token}), 200
-        else:
-            return jsonify({"Message": "User not found! Check your login details"}), 404
+        return jsonify({"Message": "User not found! Check your login details"}), 404
     return jsonify({"Message": "User not found!"}), 404
 
 
