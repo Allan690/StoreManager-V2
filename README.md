@@ -1,7 +1,6 @@
 [![Build Status](https://travis-ci.com/Allan690/StoreManager-V2.svg?branch=develop)](https://travis-ci.com/Allan690/StoreManager-V2)
-[![Maintainability](https://api.codeclimate.com/v1/badges/c64c6681c99f2aac3ff2/maintainability)](https://codeclimate.com/github/Allan690/StoreManager-V2/maintainability)
-[![Coverage Status](https://coveralls.io/repos/github/Allan690/StoreManager-ADC3/badge.svg?branch=ch-database-setup-161438646)](https://coveralls.io/github/Allan690/StoreManager-ADC3?branch=ch-database-setup-161438646)
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/3b5f48196e4b3a68d97c)
+![Coverage Status](https://coveralls.io/repos/github/Allan690/StoreManager-V2/badge.svg?branch=develop)
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/a3f6bf3305b4b7576318)
 
 # Store Manager-API v2
 Store Manager API is a flask RESTful API that implements token based authentication with endpoints that enable the user
@@ -13,31 +12,18 @@ to:
 
 ## Example request with response
 ```
-curl --request POST \
-  --url https://store-manager-api-app-v1.herokuapp.com/api/v1/auth/register \
-  --header 'Content-Type: application/json' \
-  --data '{
-  "email": "testuser999@gmail.com",
-  "password": "testuserpass"
+curl -X POST \
+  --url 'http://localhost:5000/api/v2/auth/signup' \
+  -H 'Authorization: Bearer OAuthAccessToken'\
+  -H 'Accept: application/json'\
+  -H 'Content-Type: application/json' \
+  --data-raw '{
+  "email": "sam1@andela.com",
+  "password": "sam1234567"
 }'
-
 Response body
 {
-"message": "User registered successfully"
-}
-
-Response code 
-{
-201
-}
-Response header
-{
-"connection":"keep-alive"
-"content-length" :"48"
-"content-type": "application/json"
-"date": "Sat, 20 Oct 2018 12:37:59 GMT"
-"server": "gunicorn/19.9.0"
-"via": "1.1 vegur"
+  "Message": "Attendant user registered successfully"
 }
 
 ```
@@ -77,7 +63,6 @@ port=5432
 ## Running it on machine
 - Create a .env file to store your environment variables: `touch .env`
 - In the `.env` file add this lines: `export SECRET=<your-secret-key-here` and `export FLASK_APP="run.py"`
-- Create a file at the root directory called `db.ini` and enter the following into it:
 - On terminal do: `source .env`
 - Run the application: `flask run`
 - The api endpoints can be consumed using postman.
@@ -97,11 +82,12 @@ port=5432
 
 
 ## Heroku application
-https://store-manager-api-app-v1.herokuapp.com/
+https://store-manager-api-app-v2.herokuapp.com/
 
 ## API documentation
+https://apimatic.io/apidocs/storemanager-api-v2
 - *Note*: if using the above documentation for running the application on your local machine, just replace the heroku app
-link with your localhost e.g `localhost:5000/api/v1/auth/register` for the registration endpoint
+link with your localhost e.g `localhost:5000/api/v2/auth/signup` for the registration endpoint
 
 ## Built With
 * [Flask](http://flask.pocoo.org/) -  The web framework used
