@@ -168,3 +168,8 @@ def get_sales_by_id(sales_id):
 def page_not_found(e):
     """Returns an error message if page is missing or route is wrong"""
     return jsonify({"Message": "The page is missing. Please check your route!"}), 404
+
+
+@prod.errorhandler(500)
+def server_error(e):
+    return jsonify({"Message": "There was an error processing your information!"}), 500
