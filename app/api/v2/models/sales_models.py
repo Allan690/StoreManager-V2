@@ -35,7 +35,7 @@ class SalesModel(DatabaseConnection):
             "Select * from sales where user_id = %s",
             (user_id,)
         )
-        sale = self.cursor.fetchone()
+        sale = self.cursor.fetchall()
         return sale
 
     def get_sale_by_id(self, sale_id):
@@ -47,5 +47,4 @@ class SalesModel(DatabaseConnection):
         )
         sale = self.cursor.fetchone()
         return sale
-
 
