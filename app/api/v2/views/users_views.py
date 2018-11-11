@@ -83,12 +83,12 @@ def make_admin_user():
 @user_dec.route('/api/v2/auth/users', methods=['GET'])
 @jwt_required
 def get_all_users():
+    """Gets all registered users of the application"""
     email = get_jwt_identity()
     user = user_obj.get_user_by_email(email)
     role = user["role"]
     if role != "admin":
-        return jsonify(
-            {"Message": "You must be an admin to perform this action"}), 403
+        return jsonify({"User Profile": user})
     users = user_obj.get_all_users()
     return jsonify({"Users": users}), 200
 
