@@ -88,7 +88,8 @@ def get_all_users():
     user = user_obj.get_user_by_email(email)
     role = user["role"]
     if role != "admin":
-        return jsonify({"User Profile": user})
+        att_user = user_obj.get_attendant_by_email(email)
+        return jsonify({"User Profile": att_user}), 200
     users = user_obj.get_all_users()
     return jsonify({"Users": users}), 200
 

@@ -65,6 +65,13 @@ class UserModel(DatabaseConnection):
         user1 = user.cursor.fetchone()
         return user1
 
+    @staticmethod
+    def get_attendant_by_email(email):
+        user = UserModel()
+        user.cursor.execute("SELECT * from users where email = '{}' and role =' attendant' ".format(email))
+        user1 = user.cursor.fetchone()
+        return user1
+
     def make_admin(self, user_id):
         """This method makes an attendant user admin"""
         self.cursor.execute(

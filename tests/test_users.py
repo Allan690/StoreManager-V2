@@ -168,6 +168,23 @@ class UserLoginClass(TestSetUp):
                                 headers=auth)
         self.assertEqual(response.status_code, 200)
 
+    def test_get_attendant_details(self):
+        """Tests that the API can get details of the logged in attendant"""
+        self.test_attendant_user_can_be_created()
+        resp_login = self.app.post("/api/v2/auth/login",
+                                   data=json.dumps(
+                                       dict(
+                                           email="ballery112@gmail.com",
+                                           password="allan121lcompany")),
+                                   content_type="application/json")
+        result_login = json.loads(resp_login.data)
+        token = result_login['token']
+        auth = {"Authorization": "Bearer " + token}
+        response = self.app.get('/api/v2/auth/users',
+                                content_type="application/json",
+                                headers=auth)
+        self.assertEqual(response.status_code, 200)
+
     def test_valid_login_generates_auth_token(self):
         """Tests token is generated on successful login."""
         response = self.app.post("/api/v2/auth/login",
