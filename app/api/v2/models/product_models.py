@@ -108,7 +108,8 @@ class ProductModel(DatabaseConnection):
             return products
 
     def get_product_by_id(self, prod_id):
-        """Fetches a particular product from the table using the product id of that product"""
+        """Fetches a particular product from the table
+         using the product id of that product"""
         if self.cursor:
             self.prod_id = prod_id
             self.cursor.execute(

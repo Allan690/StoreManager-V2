@@ -17,7 +17,8 @@ class SalesModel(DatabaseConnection):
     def create_sale_record(self):
         """Creates a sale record in the sales table"""
         self.cursor.execute(
-            "INSERT INTO sales(user_id, product_id, sales_quantity, prod_price) VALUES(%s,%s,%s,%s)",
+            "INSERT INTO sales(user_id, product_id, sales_quantity, prod_price)"
+            " VALUES(%s,%s,%s,%s)",
             (self.user_id, self.prod_id, self.quantity, self.price), )
 
     def get_all_sales(self):

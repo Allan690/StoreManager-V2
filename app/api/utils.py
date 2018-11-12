@@ -20,7 +20,8 @@ class KeyValidators(object):
         if 'prod_category' not in self.data:
             return jsonify({"Message": "Product category is required"}), 400
         if 'minimum_allowed' not in self.data:
-            return jsonify({"Message": "Minimum allowed quantity required!"}), 400
+            return jsonify(
+                {"Message": "Minimum allowed quantity required!"}), 400
 
     def check_missing_keys_in_login(self):
         if 'email' not in self.data:
@@ -46,14 +47,19 @@ class Validator(object):
     def validate_user(data):
         validate_email = Validator.validate_email(data['email'])
         if data['email'] == "" or data['password'] == "":
-            return jsonify({'Message': "Both email and password are required"}), 400
+            return jsonify(
+                {'Message': "Both email and password are required"}), 400
         for x in data['password']:
             if x.isspace():
-                return jsonify({"Message": "Password can't contain spaces"}), 400
+                return jsonify(
+                    {"Message": "Password can't contain spaces"}), 400
         if len(data['password'].strip()) < 8:
-            return jsonify({"Message": "Password should have at least 8 characters"}), 400
+            return jsonify(
+                {"Message": "Password should have at least 8 characters"}), 400
         if validate_email:
-            return jsonify({"Message": "Wrong email format: Enter a valid email address"}), 400
+            return jsonify(
+                {"Message": "Wrong email format: Enter a valid email address"}
+            ), 400
         users = user_object.get_all_users()
         for user in users:
             if data["email"] == user["email"]:
@@ -82,12 +88,15 @@ class Validator(object):
         if not data['prod_category'] or data['prod_category'] == "":
             return jsonify({"Message": "Product category required"}), 400
         if not isinstance(data['prod_category'], str):
-            return jsonify({"Message": "Product category must be a string!"}), 400
+            return jsonify(
+                {"Message": "Product category must be a string!"}), 400
 
         if not isinstance(data['minimum_allowed'], int):
-            return jsonify({"Message": "Minimum allowed quantity must be a number!"}), 400
+            return jsonify(
+                {"Message": "Minimum allowed quantity must be a number!"}), 400
         if not data['minimum_allowed'] or data['minimum_allowed'] == 0:
-            return jsonify({"Message": "Minimum allowed quantity required!"}), 400
+            return jsonify(
+                {"Message": "Minimum allowed quantity required!"}), 400
         products = prod_obj.get_all_products()
         for product in products:
             if data["prod_name"] == product["prod_name"]:
@@ -100,13 +109,15 @@ class Validator(object):
     def validate_update(data):
         if data["prod_name"]:
             if not isinstance(data['prod_name'], str):
-                return jsonify({"Message": "Product name must be a string!"}), 400
+                return jsonify(
+                    {"Message": "Product name must be a string!"}), 400
         if data["prod_quantity"]:
             if not isinstance(data['prod_quantity'], int):
                 return jsonify({"Message": "Quantity must be a number!"}), 400
         if data["prod_description"]:
             if not isinstance(data['prod_description'], str):
-                return jsonify({"Message": "Description must be a string!"}), 400
+                return jsonify(
+                    {"Message": "Description must be a string!"}), 400
             if not data['prod_description']:
                 return jsonify({"Message": "Description is required!"}), 400
         if data["prod_price"]:
@@ -116,9 +127,12 @@ class Validator(object):
                 return jsonify({"Message": "Price is required!"}), 400
         if data["minimum_allowed"]:
             if not isinstance(data['minimum_allowed'], int):
-                return jsonify({"Message": "Minimum allowed quantity must be a number!"}), 400
+                return jsonify(
+                    {"Message": "Minimum allowed quantity must be a number!"}
+                ), 400
             if not data['minimum_allowed'] or data['minimum_allowed'] == 0:
-                return jsonify({"Message": "Minimum allowed quantity required!"}), 400
+                return jsonify(
+                    {"Message": "Minimum allowed quantity required!"}), 400
 
     def validate_sales(data):
         if not data or not data['prod_id']:
@@ -147,7 +161,8 @@ class Validator(object):
         validate_em = Validator.validate_email(auth["email"])
         if validate_em:
             return jsonify({"Message":
-                            "Wrong email format: Enter a valid email address"}), 400
+                            "Wrong email format: Enter a valid email address"}
+                           ), 400
 
     def validate_make_admin(data):
         if not data:
@@ -156,12 +171,15 @@ class Validator(object):
             return jsonify({"Message": "Email must be a string!"}), 400
         validate_email = Validator.validate_email(data['email'])
         if validate_email:
-            return jsonify({"Message":
-                            "Wrong email format: Enter a valid email address"}), 400
+            return jsonify(
+                {"Message": "Wrong email format: Enter a valid email address"}
+            ), 400
 
     def validate_email(email):
-        """This method uses a regular expression to validate email entered by user"""
-        if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
+        """This method uses a regular expression to validate email
+        entered by user"""
+        if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$",
+                        email):
             return True
         return False
 

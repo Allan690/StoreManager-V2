@@ -1,7 +1,8 @@
 import datetime
 from flask import jsonify, request, Blueprint
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
+from flask_jwt_extended import jwt_required, create_access_token,\
+    get_jwt_identity
 from ..models.user_models import UserModel
 from ...utils import Validator, KeyValidators
 
@@ -113,11 +114,13 @@ def login_user():
                                                      ))
                 return jsonify({"Message": "User logged in successfully!",
                                 "token": access_token}), 200
-        return jsonify({"Message": "User not found! Check your login details"}), 404
+        return jsonify({
+            "Message": "User not found! Check your login details"}), 404
     return jsonify({"Message": "User not found!"}), 404
 
 
 @user_dec.errorhandler(404)
 def page_not_found(e):
     """Returns an error message if page is missing or route is wrong"""
-    return jsonify({"Message": "The page is missing. Please check your route!"}), 404
+    return jsonify(
+        {"Message": "The page is missing. Please check your route!"}), 404

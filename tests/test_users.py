@@ -65,8 +65,9 @@ class UserLoginClass(TestSetUp):
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
         response = self.app.post("/api/v2/auth/signup",
-                                 data=json.dumps(dict(email="",
-                                                      password="allangmailcompany")
+                                 data=json.dumps(
+                                     dict(email="",
+                                          password="allangmailcompany")
                                                  ),
                                  content_type="application/json",
                                  headers=auth)
@@ -77,15 +78,17 @@ class UserLoginClass(TestSetUp):
     def test_password_with_spaces(self):
         """Tests error raised when password has spaces"""
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany")),
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
         response = self.app.post("/api/v2/auth/signup",
-                                 data=json.dumps(dict(email="allan123@gmail.com",
-                                                      password=" ")),
+                                 data=json.dumps(
+                                     dict(email="allan123@gmail.com",
+                                          password=" ")),
                                  content_type="application/json",
                                  headers=auth)
         self.assertEqual(response.status_code, 400)
@@ -95,15 +98,17 @@ class UserLoginClass(TestSetUp):
     def test_password_length(self):
         """Tests that password length is equal or greater than 8"""
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany")),
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
         response = self.app.post("/api/v2/auth/signup",
-                                 data=json.dumps(dict(email="allanyeye@gmail.com",
-                                                      password="allan")),
+                                 data=json.dumps(
+                                     dict(email="allanyeye@gmail.com",
+                                          password="allan")),
                                  content_type="application/json",
                                  headers=auth)
         self.assertEqual(response.status_code, 400)
@@ -215,7 +220,8 @@ class UserLoginClass(TestSetUp):
         self.assertEqual(response.status_code, 200)
 
     def test_unauthorized_make_user_admin(self):
-        """Tests that API prevents unauthorized user making another user admin"""
+        """Tests that API prevents unauthorized user making
+        another user admin"""
         self.test_attendant_user_can_be_created()
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(
@@ -233,7 +239,8 @@ class UserLoginClass(TestSetUp):
         self.assertEqual(response.status_code, 401)
 
     def test_request_missing_email_key(self):
-        """Tests that the API raises an error when request is missing email key"""
+        """Tests that the API raises an error when request
+        is missing email key"""
         resp_login = self.app.post("/api/v2/auth/login",
                                    data=json.dumps(
                                        dict(email="allan@gmail.com",
@@ -263,8 +270,8 @@ class UserLoginClass(TestSetUp):
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
         resp_create_user = self.app.post("/api/v2/auth/signup",
-                                         data=json.dumps(
-                                             dict(email="allan121l@company.com")),
+                                         data=json.dumps
+                                         (dict(email="allan121l@company.com")),
                                          content_type="application/json",
                                          headers=auth)
         self.assertEqual(resp_create_user.status_code, 400)
@@ -272,7 +279,8 @@ class UserLoginClass(TestSetUp):
         self.assertIn("missing keys", response_msg["Message"])
 
     def test_wrong_email_used_login(self):
-        """Tests that the API raises an error message when the user enters a non-existent email"""
+        """Tests that the API raises an error message when the user enters
+        a non-existent email"""
         response = self.app.post("/api/v2/auth/login",
                                  data=json.dumps(
                                      dict(email="allan@hotmail.com",

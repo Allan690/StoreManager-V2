@@ -49,7 +49,7 @@ class TestProductModel(TestSetUp):
                                          data=json.dumps(
                                              dict(
                                                  email="ballery112@gmail.com",
-                                                  password="allan121lcompany")),
+                                                 password="allan121lcompany")),
                                          content_type="application/json",
                                          headers=auth1)
         # login the attendant
@@ -243,11 +243,13 @@ class TestProductModel(TestSetUp):
         self.assertIn("number", response_msg["Message"])
 
     def test_min_allowed_string(self):
-        """Tests that the API should not accept minimum allowed quantity as a string"""
+        """Tests that the API should not accept
+         minimum allowed quantity as a string"""
         # login the user
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany")),
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
@@ -273,8 +275,9 @@ class TestProductModel(TestSetUp):
         self.test_product_creation()
         # login the admin
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany")),
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
@@ -295,7 +298,8 @@ class TestProductModel(TestSetUp):
         self.assertIn("updated", response_msg["Message"])
 
     def test_product_update_unauthorized_user(self):
-        """Tests that the API prevents an unauthorized user from updating a product"""
+        """Tests that the API prevents an unauthorized
+        user from updating a product"""
         # create a product
         self.test_product_creation()
         # login the admin
@@ -388,23 +392,26 @@ class TestProductModel(TestSetUp):
         self.test_product_creation()
         # login the admin
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany")),
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
         # Sign up an attendant
         resp_create_user = self.app.post("/api/v2/auth/signup",
-                                         data=json.dumps(dict(email="ballery112@gmail.com",
-                                                              password="allan121lcompany")),
+                                         data=json.dumps(dict(
+                                             email="ballery112@gmail.com",
+                                             password="allan121lcompany")),
                                          content_type="application/json",
                                          headers=auth)
         # Login the attendant
         self.assertEqual(resp_create_user.status_code, 201)
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="ballery112@gmail.com",
-                                                        password="allan121lcompany")),
+                                   data=json.dumps(
+                                       dict(email="ballery112@gmail.com",
+                                            password="allan121lcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']
@@ -425,8 +432,9 @@ class TestProductModel(TestSetUp):
         self.test_product_creation()
         # login the admin user
         resp_login = self.app.post("/api/v2/auth/login",
-                                   data=json.dumps(dict(email="allan@gmail.com",
-                                                        password="allangmailcompany")),
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
                                    content_type="application/json")
         result_login = json.loads(resp_login.data)
         token = result_login['token']

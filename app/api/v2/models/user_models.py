@@ -16,10 +16,12 @@ class UserModel(DatabaseConnection):
     def create_attendant_user(self):
         """Creates an attendant user"""
         self.cursor.execute(
-            "INSERT INTO users(email,password,role) VALUES(%s,%s, 'attendant')", (
+            "INSERT INTO users(email,password,role) VALUES(%s,%s, 'attendant')",
+            (
                 self.email, self.password,)
         )
-        self.cursor.execute("SELECT user_id FROM users WHERE email = %s", (self.email,))
+        self.cursor.execute("SELECT user_id FROM users WHERE email = %s",
+                            (self.email,))
         row_result = self.cursor.fetchone()
         self.user_id = row_result["user_id"]
 
@@ -29,7 +31,8 @@ class UserModel(DatabaseConnection):
             "INSERT INTO users(email, password, role) VALUES(%s, %s, 'admin')",
             (self.email, self.password,)
         )
-        self.cursor.execute("SELECT user_id FROM users WHERE email = %s", (self.email,))
+        self.cursor.execute("SELECT user_id FROM users WHERE email = %s",
+                            (self.email,))
         row_result = self.cursor.fetchone()
         self.user_id = row_result["user_id"]
 
@@ -39,9 +42,11 @@ class UserModel(DatabaseConnection):
         self.cursor.execute(query)
         res = self.cursor.fetchone()
         if not res:
-            password_hash = generate_password_hash('allangmailcompany', method='sha256')
+            password_hash = generate_password_hash('allangmailcompany',
+                                                   method='sha256')
             self.cursor.execute(
-                "INSERT INTO users(email, password, role) VALUES('allan@gmail.com', %s, 'admin')", (password_hash,)
+                "INSERT INTO users(email, password, role) "
+                "VALUES('allan@gmail.com', %s, 'admin')", (password_hash,)
             )
 
     def get_all_users(self):
@@ -61,14 +66,16 @@ class UserModel(DatabaseConnection):
     @staticmethod
     def get_user_by_email(email):
         user = UserModel()
-        user.cursor.execute("SELECT * from users where email = '{}' ".format(email))
+        user.cursor.execute("SELECT * from users where email = '{}' ".format
+                            (email))
         user1 = user.cursor.fetchone()
         return user1
 
     @staticmethod
     def get_attendant_by_email(email):
         user = UserModel()
-        user.cursor.execute("SELECT * from users where email = '{}' and role ='attendant' ".format(email))
+        user.cursor.execute("SELECT * from users where email = '{}' and "
+                            "role ='attendant' ".format(email))
         user1 = user.cursor.fetchone()
         return user1
 

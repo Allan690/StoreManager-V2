@@ -25,7 +25,8 @@ def handle_404_errors(e):
 @flask_app.errorhandler(405)
 def handle_405_errors(e):
     return jsonify(
-        {"Message": "The method is not allowed for the requested URL. Please check your HTTP method"}
+        {"Message": "The method is not allowed for the requested URL. "
+                    "Please check your HTTP method"}
     ), 405
 
 
@@ -39,5 +40,7 @@ def handle_500_errors(e):
 @flask_app.route('/')
 def index_route():
     """Defines the index route"""
-    return "<p>Find the app documentation <a href='https://apimatic.io/apidocs/storemanager-api-v2/'>here</a></p>"
+    return "<p>Find the app documentation " \
+           "<a href='https://apimatic.io/apidocs/storemanager-api-v2/'>" \
+           "here</a></p>"
 
