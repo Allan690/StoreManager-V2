@@ -103,7 +103,7 @@ class Validator(object):
                 return jsonify({'Message': "Product already exists"}), 400
             prod_name_db = str(data["prod_name"])
             prod_name_supplied = str(product["prod_name"])
-            if prod_name_db.lower() == prod_name_supplied:
+            if prod_name_db.lower() == prod_name_supplied.lower():
                 return jsonify({'Message': "Product already exists"}), 400
 
     def validate_update(data):

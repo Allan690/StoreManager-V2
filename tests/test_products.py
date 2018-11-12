@@ -454,6 +454,36 @@ class TestProductModel(TestSetUp):
         response_msg = json.loads(response.data.decode("UTF-8"))
         self.assertIn("already exists", response_msg["Message"])
 
+    def test_prevent_duplicate_product_names_with_diff_cases(self):
+        """Tests that product will detect and prevent duplicate when one is
+        in upper case and another lower case"""
+        # create a product
+        self.test_product_creation()
+        # login the admin user
+        resp_login = self.app.post("/api/v2/auth/login",
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
+                                   content_type="application/json")
+        result_login = json.loads(resp_login.data)
+        token = result_login['token']
+        auth = {"Authorization": "Bearer " + token}
+        # try adding same product you created now in lowercase
+        response = self.app.post("/api/v2/products",
+                                 data=json.dumps(
+                                     dict(prod_name="bananas",
+                                          prod_category="Fruits",
+                                          prod_price=1200,
+                                          prod_quantity=100,
+                                          minimum_allowed=10,
+                                          prod_description="Sweet bananas")),
+                                 content_type="application/json",
+                                 headers=auth)
+        self.assertEqual(response.status_code, 400)
+        response_msg = json.loads(response.data.decode("UTF-8"))
+        self.assertIn("already exists", response_msg["Message"])
+
+
 
 if __name__ == "__main__":
     unittest.main()
