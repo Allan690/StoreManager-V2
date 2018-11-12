@@ -4,7 +4,7 @@ path = os.path.dirname(__file__)+'/db.ini'
 test_path = os.path.dirname(__file__)+'/testdb.ini'
 
 
-def config(filename = path,section='postgresql'):
+def config(filename=path, section='postgresql'):
     # create a parser
     parser = ConfigParser()
     # read config file
@@ -17,7 +17,8 @@ def config(filename = path,section='postgresql'):
         for param in params:
             db[param[0]] = param[1]
     else:
-        raise Exception('Section {0} not found in the {1} file'.format(section, filename))
+        raise Exception('Section {0} not found in the {1} file'.format
+                        (section, filename))
 
     return db
 
@@ -35,6 +36,7 @@ def test_config(filename=test_path, section='postgresql'):
         for param in params:
             db[param[0]] = param[1]
     else:
-        raise Exception('Section {0} not found in the {1} file'.format(section, filename))
+        raise Exception('Section {0} not found in the {1} file'.format
+                        (section, filename))
 
     return db

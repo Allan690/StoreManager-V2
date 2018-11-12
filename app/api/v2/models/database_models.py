@@ -71,7 +71,8 @@ class DatabaseConnection(object):
     def cursor_obj(self):
         """Defines the cursor"""
         self.db = DatabaseConnection()
-        self.cur = self.db.get_connection().cursor(cursor_factory=extras.RealDictCursor)
+        self.cur = self.db.get_connection().cursor(
+            cursor_factory=extras.RealDictCursor)
         return self.cur
 
     def destroy_tables(self):

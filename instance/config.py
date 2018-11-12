@@ -4,7 +4,8 @@ import psycopg2
 
 
 class Configs(object):
-    """This class defines the configurations for testing and normal/production environment"""
+    """This class defines the configurations for testing and
+    normal/production environment"""
 
     def __init__(self):
         self.conn = None
