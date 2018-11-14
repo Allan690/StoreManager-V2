@@ -43,6 +43,6 @@ def handle_500_errors(e):
 def index_route():
     """Defines the index route"""
     return "<p>Find the app documentation " \
-           "<a href='https://apimatic.io/apidocs/storemanager-api-v2/'>" \
+           "<a href='https://apimatic.io/apidocs/storemanager-api-v2-1/'>" \
            "here</a></p>"
 
