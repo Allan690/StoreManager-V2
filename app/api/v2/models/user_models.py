@@ -56,6 +56,20 @@ class UserModel(DatabaseConnection):
         users = self.cursor.fetchall()
         return users
 
+    def get_all_attendants(self):
+        """Fetches all attendant users"""
+        command = "SELECT * FROM users where role= 'attendant'"
+        self.cursor.execute(command)
+        users = self.cursor.fetchall()
+        return users
+
+    def get_admin_users(self):
+        """Fetches all admin users"""
+        command = "SELECT * FROM users where role= 'admin'"
+        self.cursor.execute(command)
+        users = self.cursor.fetchall()
+        return users
+
     def get_user_by_id(self, user_id):
         """Fetches a particular user from the database by supplied id"""
         command = "SELECT * FROM users where user_id = {}".format(user_id)
@@ -65,6 +79,7 @@ class UserModel(DatabaseConnection):
 
     @staticmethod
     def get_user_by_email(email):
+        """Gets a user by supplied email address"""
         user = UserModel()
         user.cursor.execute("SELECT * from users where email = '{}' ".format
                             (email))
@@ -73,6 +88,7 @@ class UserModel(DatabaseConnection):
 
     @staticmethod
     def get_attendant_by_email(email):
+        """Gets an attendant user by supplied email"""
         user = UserModel()
         user.cursor.execute("SELECT * from users where email = '{}' and "
                             "role ='attendant' ".format(email))

@@ -41,7 +41,6 @@ class UserLoginClass(TestSetUp):
                                        dict(email="ballery112@gmail.com",
                                             password="allan121lcompany", )),
                                    content_type="application/json")
-        print(resp_login)
         result_login = json.loads(resp_login.data)
         token = result_login['token']
         auth = {"Authorization": "Bearer " + token}
@@ -237,6 +236,8 @@ class UserLoginClass(TestSetUp):
                                 content_type="application/json",
                                 headers=auth)
         self.assertEqual(response.status_code, 401)
+        response_msg = json.loads(response.data.decode("UTF-8"))
+        self.assertIn("You must be an admin", response_msg["Message"])
 
     def test_request_missing_email_key(self):
         """Tests that the API raises an error when request
@@ -289,6 +290,69 @@ class UserLoginClass(TestSetUp):
         self.assertEqual(response.status_code, 404)
         response_msg = json.loads(response.data.decode("UTF-8"))
         self.assertIn("User not found!", response_msg["Message"])
+
+    def test_prevent_making_admin_user_admin(self):
+        """Tests that the API raises an error when the user tries to upgrade
+        an already existing admin"""
+
+        # calling method to make an attendant user admin
+        self.test_attendant_make_admin()
+
+        # try to make them admin again
+        resp_login = self.app.post("/api/v2/auth/login",
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
+                                   content_type="application/json")
+        result_login = json.loads(resp_login.data)
+        token = result_login['token']
+        auth = {"Authorization": "Bearer " + token}
+        response = self.app.put("/api/v2/auth/make-admin",
+                                data=json.dumps(
+                                    dict(email="ballery112@gmail.com")),
+                                content_type="application/json",
+                                headers=auth)
+        self.assertEqual(response.status_code, 403)
+        response_msg = json.loads(response.data.decode("UTF-8"))
+        self.assertIn("User is already an admin", response_msg["Message"])
+
+    def test_get_all_attendant_users(self):
+        """Tests whether our API can retrieve all attendants"""
+
+        # call method that creates an attendant user
+        self.test_attendant_user_can_be_created()
+        # try to get this attendant user
+        resp_login = self.app.post("/api/v2/auth/login",
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
+                                   content_type="application/json")
+        result_login = json.loads(resp_login.data)
+        token = result_login['token']
+        auth = {"Authorization": "Bearer " + token}
+        response = self.app.get('/api/v2/auth/attendants',
+                                content_type="application/json",
+                                headers=auth)
+        self.assertEqual(response.status_code, 200)
+
+    def test_retrieve_all_admins(self):
+        """Tests whether the API can retrieve all admins in the system"""
+
+        # make an attendant user admin
+        self.test_attendant_make_admin()
+        # try to retrieve this user
+        resp_login = self.app.post("/api/v2/auth/login",
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
+                                   content_type="application/json")
+        result_login = json.loads(resp_login.data)
+        token = result_login['token']
+        auth = {"Authorization": "Bearer " + token}
+        response = self.app.get('/api/v2/auth/admins',
+                                content_type="application/json",
+                                headers=auth)
+        self.assertEqual(response.status_code, 200)
 
 
 if __name__ == '__main__':

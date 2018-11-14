@@ -41,7 +41,7 @@ def get_all_products():
     if len(prods) > 0:
         return jsonify({"Message": "Product list retrieved successfully!",
                         "All products": prods}), 200
-    return jsonify({"Message": "Product list empty!"}), 404
+    return jsonify({"Message": "Products not found!"}), 404
 
 
 @prod.route('/api/v2/products/<int:product_id>', methods=['GET'])
@@ -99,74 +99,6 @@ def delete_product_by_id(product_id):
     return jsonify({"Message": "Product not found!"}), 404
 
 
-@prod.route('/api/v2/sales', methods=['POST'])
-@jwt_required
-def create_sale_record():
-    """Creates a sales record and saves it to the database"""
-    email = get_jwt_identity()
-    user = users_obj.get_user_by_email(email)
-    role = user["role"]
-    if role != "attendant":
-        return jsonify({"Message":
-                        "You must be an attendant to sale a product"}), 401
-    data = request.get_json()
-    key_valid = KeyValidators(data)
-    if key_valid.check_missing_keys_in_sales():
-        return key_valid.check_missing_keys_in_sales()
-    validate = Validator(data)
-    if validate.validate_sales():
-        return validate.validate_sales()
-    try:
-        user_id = user["user_id"]
-        prod_id = data["prod_id"]
-        sold_quantity = data["quantity"]
-    except KeyError:
-        return jsonify({"Message": "You have a missing parameter!"}), 400
-    resp = prod_obj.get_product_by_id(prod_id)
-    prod_price = resp['prod_price']
-    if resp['prod_quantity'] > sold_quantity \
-            and resp['prod_quantity'] > int(resp['minimum_allowed']):
-        prod_obj.update_prod_quantity(
-            resp["prod_quantity"] - sold_quantity, prod_id)
-        sale_obj = SalesModel(user_id, prod_id, sold_quantity, prod_price)
-        sale_obj.create_sale_record()
-        return jsonify({"Message":
-                        "Sale record created successfully!"}), 201
-    return jsonify({"Message":
-                    "Sold quantity exceeds what is in stock!"}), 400
-
-
-@prod.route('/api/v2/sales', methods=['GET'])
-@jwt_required
-def get_all_sales():
-    """Fetches all sales from the database"""
-    email = get_jwt_identity()
-    user = users_obj.get_user_by_email(email)
-    role = user["role"]
-    user_id = user["user_id"]
-    if role != "admin":
-        return jsonify({"Message": "Your sale was retrieved successfully!",
-                        "Sale records":
-                            sales_obj.get_sales_by_user_id(user_id)}), 200
-    sales = sales_obj.get_all_sales()
-    if not sales or len(sales) == 0:
-        return jsonify({"Message": "Sales not found!"}), 404
-    return jsonify({"Message": "Sales retrieved successfully!",
-                    "All Sales": sales
-                    }), 200
-
-
-@prod.route('/api/v2/sales/<int:sales_id>', methods=['GET'])
-@jwt_required
-def get_sales_by_id(sales_id):
-    """Fetches a sale from the database using supplied id"""
-    sale = sales_obj.get_sale_by_id(sales_id)
-    if not sale or len(sale) == 0:
-        return jsonify({"Message": "Sales record not found!"}), 404
-    return jsonify({"Message": "Sale retrieved successfully",
-                    "Sale Profile": sale}), 200
-
-
 @prod.errorhandler(404)
 def page_not_found(e):
     """Returns an error message if page is missing or route is wrong"""
@@ -176,5 +108,6 @@ def page_not_found(e):
 
 @prod.errorhandler(500)
 def server_error(e):
+    """Handles internal server errors"""
     return jsonify({
         "Message": "There was an error processing your request!"}), 500
