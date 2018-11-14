@@ -85,7 +85,7 @@ port=5432
 https://store-manager-api-app-v2.herokuapp.com/
 
 ## API documentation
-https://apimatic.io/apidocs/storemanager-api-v2
+https://apimatic.io/apidocs/storemanager-api-v2-1
 - *Note*: if using the above documentation for running the application on your local machine, just replace the heroku app
 link with your localhost e.g `localhost:5000/api/v2/auth/signup` for the registration endpoint
 
