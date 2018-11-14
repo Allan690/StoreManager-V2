@@ -110,7 +110,7 @@ class TestSalesModel(TestSetUp):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.content_type, 'application/json')
         response_msg = json.loads(resp.data.decode("UTF-8"))
-        self.assertIn("Your sale was retrieved successfully",
+        self.assertIn("Sale records retrieved successfully",
                       response_msg["Message"])
 
     def test_sale_quantity_is_zero(self):

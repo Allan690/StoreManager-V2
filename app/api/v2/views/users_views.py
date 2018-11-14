@@ -1,12 +1,12 @@
 import datetime
 from flask import jsonify, request, Blueprint
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import jwt_required, create_access_token,\
+from flask_jwt_extended import jwt_required, create_access_token, \
     get_jwt_identity
 from ..models.user_models import UserModel
 from ...utils import Validator, KeyValidators
 
-user_dec = Blueprint('v1_user', __name__)
+user_dec = Blueprint('v2_user', __name__)
 user_obj = UserModel()
 
 
@@ -41,21 +41,6 @@ def create_attendant_user():
     return jsonify({"Message": "Attendant user registered successfully"}), 201
 
 
-@user_dec.route('/api/v2/auth/signup-admin', methods=['POST'])
-def create_admin_user():
-    """This view creates an admin user"""
-    data = request.get_json()
-    validate = Validator(data)
-    if validate.validate_user():
-        return validate.validate_user()
-    password_hash = generate_password_hash(data['password'], method='sha256')
-    email = data["email"]
-    role = "admin"
-    user = UserModel(email, password_hash, role)
-    user.create_admin_user()
-    return jsonify({"Message": "Admin user registered successfully"}), 201
-
-
 @user_dec.route('/api/v2/auth/make-admin', methods=['PUT'])
 @jwt_required
 def make_admin_user():
@@ -77,6 +62,8 @@ def make_admin_user():
     ret_users = user_obj.get_user_by_email(email)
     if not ret_users:
         return jsonify({"Message": "User not found!"}), 404
+    if ret_users["role"] != 'attendant':
+        return jsonify({"Message": "User is already an admin!"}), 403
     user_obj.make_admin(email)
     return jsonify({"Message": "Attendant made admin successfully!"}), 200
 
@@ -90,9 +77,40 @@ def get_all_users():
     role = user["role"]
     if role != "admin":
         att_user = user_obj.get_attendant_by_email(email)
-        return jsonify({"User Profile": att_user}), 200
+        return jsonify({"Message": "User retrieved successfully!",
+                        "User Profile": att_user}), 200
     users = user_obj.get_all_users()
-    return jsonify({"Users": users}), 200
+    return jsonify({"Message": "Users retrieved successfully!",
+                    "Users": users}), 200
+
+
+@user_dec.route('/api/v2/auth/admins', methods=['GET'])
+@jwt_required
+def get_all_admin_users():
+    """Gets all admin users of the application"""
+    email = get_jwt_identity()
+    user = user_obj.get_user_by_email(email)
+    role = user["role"]
+    if role != "admin":
+        return jsonify({"Message": "Log in as admin to view admin users"}), 401
+    users = user_obj.get_admin_users()
+    return jsonify({"Message": "Users retrieved successfully!",
+                    "Admins": users}), 200
+
+
+@user_dec.route('/api/v2/auth/attendants', methods=['GET'])
+@jwt_required
+def get_all_attendant_users():
+    """Gets all attendant users of the application"""
+    email = get_jwt_identity()
+    user = user_obj.get_user_by_email(email)
+    role = user["role"]
+    if role != "admin":
+        return jsonify({"Message": "Log in as admin to view "
+                                   "attendant users"}), 401
+    users = user_obj.get_admin_users()
+    return jsonify({"Message": "Users retrieved successfully!",
+                    "Admins": users}), 200
 
 
 @user_dec.route('/api/v2/auth/login', methods=['POST'])
@@ -108,12 +126,12 @@ def login_user():
     user = UserModel.get_user_by_email(data['email'])
     if user:
         if check_password_hash(user['password'], data['password']):
-                access_token = create_access_token(
-                    identity=data["email"],
-                    expires_delta=datetime.timedelta(minutes=30
-                                                     ))
-                return jsonify({"Message": "User logged in successfully!",
-                                "token": access_token}), 200
+            access_token = create_access_token(
+                identity=data["email"],
+                expires_delta=datetime.timedelta(minutes=30
+                                                 ))
+            return jsonify({"Message": "User logged in successfully!",
+                            "token": access_token}), 200
         return jsonify({
             "Message": "User not found! Check your login details"}), 404
     return jsonify({"Message": "User not found!"}), 404
