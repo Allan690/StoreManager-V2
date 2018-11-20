@@ -74,6 +74,8 @@ class TestProductModel(TestSetUp):
                                  content_type="application/json",
                                  headers=auth)
         self.assertEqual(response.status_code, 401)
+        response_msg = json.loads(response.data.decode("UTF-8"))
+        self.assertIn("You must be an admin", response_msg["Message"])
 
     def test_find_product_by_id(self):
         """Tests whether our API can find a product by its id"""
@@ -342,6 +344,24 @@ class TestProductModel(TestSetUp):
         self.assertEqual(response.status_code, 401)
         response_msg = json.loads(response.data.decode("UTF-8"))
         self.assertIn("admin", response_msg["Message"])
+
+    def test_find_product_by_name(self):
+        """Tests that the API can retrieve a product by supplied name"""
+        # login the admin and create product
+        self.test_product_creation()
+        # login the admin and get the token
+        resp_login = self.app.post("/api/v2/auth/login",
+                                   data=json.dumps(
+                                       dict(email="allan@gmail.com",
+                                            password="allangmailcompany")),
+                                   content_type="application/json")
+        result_login = json.loads(resp_login.data)
+        token = result_login['token']
+        auth = {"Authorization": "Bearer " + token}
+        # use token to search for product
+        resp = self.app.get('/api/v2/products/Bananas', headers=auth)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content_type, 'application/json')
 
     def test_product_delete(self):
         """Tests that the API can delete a product."""

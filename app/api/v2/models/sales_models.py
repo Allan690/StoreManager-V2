@@ -1,5 +1,4 @@
 from .database_models import DatabaseConnection
-from flask import jsonify
 from .user_models import UserModel
 db = DatabaseConnection()
 user = UserModel()

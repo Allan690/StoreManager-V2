@@ -9,6 +9,7 @@ class ProductModel(DatabaseConnection):
         super().__init__()
         self.data = data
         self.prod_id = None
+        self.prod_name = None
         self.quantity = None
         self.cursor = db.cursor_obj()
 
@@ -115,6 +116,16 @@ class ProductModel(DatabaseConnection):
             self.cursor.execute(
                 "Select * from products where prod_id = %s",
                 (self.prod_id,)
+            )
+            product = self.cursor.fetchone()
+            return product
+
+    def get_product_by_name(self, prod_name):
+        """Fetches a product using supplied name"""
+        if self.cursor:
+            self.prod_name = prod_name
+            self.cursor.execute(
+                "Select * from products where prod_name =%s", (self.prod_name,)
             )
             product = self.cursor.fetchone()
             return product
