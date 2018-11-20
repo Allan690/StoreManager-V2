@@ -108,9 +108,9 @@ def get_all_attendant_users():
     if role != "admin":
         return jsonify({"Message": "Log in as admin to view "
                                    "attendant users"}), 401
-    users = user_obj.get_admin_users()
+    users = user_obj.get_all_attendants()
     return jsonify({"Message": "Users retrieved successfully!",
-                    "Admins": users}), 200
+                    "Attendants": users}), 200
 
 
 @user_dec.route('/api/v2/auth/login', methods=['POST'])
