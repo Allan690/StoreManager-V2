@@ -52,7 +52,8 @@ class SalesModel(DatabaseConnection):
         """Fetches all sales with a certain product id"""
         self.cursor.execute("Select * from sales where product_id = %s",
                             (prod_id,))
-        sales = self.cursor.fetchall
-        return sales
+        sales = self.cursor.fetchall()
+        if sales:
+            return sales
 
 

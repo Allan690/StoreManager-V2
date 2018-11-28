@@ -105,6 +105,7 @@ def delete_product_by_id(product_id):
                         "You must be an admin to sale a product"}), 401
     resp = prod_obj.get_product_by_id(product_id)
     resp2 = sales_obj.get_sale_by_prod_id(product_id)
+    print(resp2)
     if resp:
         if not resp2:
             prod_obj.delete_product(product_id)
