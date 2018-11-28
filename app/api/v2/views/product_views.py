@@ -104,9 +104,13 @@ def delete_product_by_id(product_id):
         return jsonify({"Message":
                         "You must be an admin to sale a product"}), 401
     resp = prod_obj.get_product_by_id(product_id)
+    resp2 = sales_obj.get_sale_by_prod_id(product_id)
     if resp:
-        prod_obj.delete_product(product_id)
-        return jsonify({"Message": "Product deleted successfully!"}), 200
+        if not resp2:
+            prod_obj.delete_product(product_id)
+            return jsonify({"Message": "Product deleted successfully!"}), 200
+        return jsonify({"Message": "Product cannot be deleted. "
+                                   "A sale(s) for the product exists"}), 403
     return jsonify({"Message": "Product not found!"}), 404
 
 

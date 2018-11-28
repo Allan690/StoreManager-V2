@@ -48,4 +48,11 @@ class SalesModel(DatabaseConnection):
         sale = self.cursor.fetchone()
         return sale
 
+    def get_sale_by_prod_id(self, prod_id):
+        """Fetches all sales with a certain product id"""
+        self.cursor.execute("Select * from sales where product_id = %s",
+                            (prod_id,))
+        sales = self.cursor.fetchall
+        return sales
+
 
